@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/account_profile_image_view"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/profile_image_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tweet_author_name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/account_profile_image_view"
+        app:layout_constraintTop_toTopOf="@+id/account_profile_image_view"
+        tools:text="Tweet Author"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:id="@+id/tweet_author_screen_name_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="/@TweeterAuthor"
+        app:layout_constraintStart_toEndOf="@+id/tweet_author_name_text_view"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp" />
+
+    <TextView
+        android:linksClickable="true"
+        android:autoLink="all"
+        android:id="@+id/tweet_message_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/account_profile_image_view"
+        app:layout_constraintTop_toBottomOf="@+id/tweet_author_name_text_view"
+        tools:text="Tweets are the basic atomic building block of all things Twitter. Tweets are also known as 'status updates.'" />
+
+    <ImageView
+        android:id="@+id/media_image_view"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/tweet_image_description"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/account_profile_image_view"
+        app:layout_constraintTop_toBottomOf="@+id/tweet_message_text_view" />
+
+</android.support.constraint.ConstraintLayout>

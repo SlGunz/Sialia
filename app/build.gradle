@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.slgunz.root.sialia"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled true
+            // Uses new built-in shrinker http://tools.android.com/tech-docs/new-build-system/built-in-shrinker
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+
+        release {
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // Android support library
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    // Android Testing Support Library's runner and rules
+    androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
+    androidTestCompile "com.android.support.test:rules:$rootProject.ext.runnerVersion"
+    // Dependencies for Android unit tests
+    androidTestCompile "junit:junit:$rootProject.ext.junitVersion"
+    androidTestCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+    // Dependencies for local unit tests
+    testCompile "junit:junit:$rootProject.ext.junitVersion"
+    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+    // Espresso UI Testing
+    compile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    // Guava
+    compile 'com.google.guava:guava:23.0-android'
+    // Dagger 2
+    compile "com.google.dagger:dagger:$rootProject.daggerAndroidVersion"
+    compile "com.google.dagger:dagger-android-support:$rootProject.daggerAndroidVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerAndroidVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerAndroidVersion"
+    // OkHttp3
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
+    // OkHttp3 OAuth 1.0a interceptor
+    compile 'se.akerfeldt:okhttp-signpost:1.1.0'
+    // Retrofit and convert adapters
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:converter-scalars:$rootProject.retrofit2Version"
+    // Gson library
+    compile 'com.google.code.gson:gson:2.8.2'
+    // RxJava 2
+    compile 'io.reactivex.rxjava2:rxjava:2.1.6'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    // Glide
+    compile 'com.github.bumptech.glide:glide:4.4.0'
+    compile 'com.github.bumptech.glide:annotations:4.4.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
+    // UI libraries
+    compile 'de.hdodenhof:circleimageview:2.2.0'
+}
