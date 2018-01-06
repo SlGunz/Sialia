@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     // Android support library
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
@@ -86,4 +87,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     // UI libraries
     compile 'de.hdodenhof:circleimageview:2.2.0'
+    //SwipyRefreshLayout
+    compile 'com.github.omadahealth:swipy:1.2.3@aar'
 }

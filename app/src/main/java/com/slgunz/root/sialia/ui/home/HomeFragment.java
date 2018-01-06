@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
@@ -39,13 +40,13 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
     @Inject
     HomeContract.Presenter mPresenter;
 
+    private boolean mCantRequestNewTweets = true;
+
     private HomeAdapter mHomeAdapter;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipyRefreshLayout mSwipyRefreshLayout;
 
     private RecyclerView mHomeRecyclerView;
-
-    private EndlessRecyclerViewScrollListener mListener;
 
     private ProgressBar mProgressBar;
 
@@ -76,17 +77,44 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.home_frag, container, false);
 
+        //Setup both swipe refresh layout
+        mSwipyRefreshLayout = root.findViewById(R.id.home_swipy_refresh_layout);
+        mSwipyRefreshLayout.setColorSchemeColors(
+                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(getActivity(), R.color.colorAccent),
+                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
+        );
+
+        mSwipyRefreshLayout.setOnRefreshListener(
+                direction -> {
+                    if(mCantRequestNewTweets){
+                        return;
+                    }
+                    // set an action for swipe up
+                    if(direction == SwipyRefreshLayoutDirection.TOP){
+                        mPresenter.loadRecentTweets(mHomeAdapter.getTheBiggestId());
+                        mCantRequestNewTweets = true;
+                    }
+                    // for swipe down
+                    if(direction == SwipyRefreshLayoutDirection.BOTTOM){
+                        mPresenter.loadPreviousTweets(mHomeAdapter.getTheLowestId());
+                        mCantRequestNewTweets = true;
+                    }
+                }
+        );
+
         mHomeRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         mHomeRecyclerView.setAdapter(mHomeAdapter);
         // set custom ScrollListener for loading previous tweets
-        mListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        EndlessRecyclerViewScrollListener listener =
+                new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mPresenter.loadPreviousTweets(mHomeAdapter.getTheLowestId());
+                mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
             }
         };
-        mHomeRecyclerView.addOnScrollListener(mListener);
+        mHomeRecyclerView.addOnScrollListener(listener);
         mHomeRecyclerView.setLayoutManager(linearLayoutManager);
 
         View newTweetLayout = root.findViewById(R.id.home_included_layout);
@@ -97,9 +125,8 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
         mNewTweetSendButton.setOnClickListener(view -> {
             String message = mNewTweetEditView.getText().toString();
             mPresenter.sendTweet(message);
-            // disabled button and clear text
+            // clear text
             mNewTweetEditView.setText("");
-            enableSendTweetButton(false);
         });
 
         // set up floating action button
@@ -122,17 +149,6 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
             }
         });
 
-        //Set up progress indicator
-        mSwipeRefreshLayout =
-                root.findViewById(R.id.home_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeColors(
-                ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-                ContextCompat.getColor(getActivity(), R.color.colorAccent),
-                ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
-        );
-
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.loadRecentTweets(mHomeAdapter.getTheBiggestId()));
-
         mProgressBar = root.findViewById(R.id.home_progress_bar);
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
@@ -141,7 +157,6 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
         mAccountProfileImage = hView.findViewById(R.id.nav_header_profile_image);
         mAccountName = hView.findViewById(R.id.nav_header_account_name);
         mAccountScreenName = hView.findViewById(R.id.nav_header_account_screen_name);
-
 
         return root;
     }
@@ -211,17 +226,22 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
     @Override
     public void setAdapterList(List<Tweet> tweets) {
         mHomeAdapter.replaceData(tweets);
+        mCantRequestNewTweets = false;
     }
 
     @Override
     public void insertBeforeToAdapterList(List<Tweet> tweets) {
         mHomeAdapter.replaceData(tweets);
-        mSwipeRefreshLayout.setRefreshing(false);
+        mSwipyRefreshLayout.setRefreshing(false);
+        mCantRequestNewTweets = false;
     }
 
     @Override
     public void appendToAdapterList(List<Tweet> tweets) {
         mHomeAdapter.appendData(tweets);
+        mSwipyRefreshLayout.setRefreshing(false);
+        mCantRequestNewTweets = false;
+        mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.TOP);
     }
 
     @Override

@@ -57,8 +57,8 @@ public class LoginActivity extends DaggerAppCompatActivity implements LoginContr
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         mPresenter.unsubscribe();
     }
 

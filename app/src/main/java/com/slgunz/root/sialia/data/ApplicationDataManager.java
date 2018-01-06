@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ApplicationDataManager {
 
     private static final int TWEET_COUNT = 30;
-    private static final int TWEET_INCREMENT = 10;
+    private static final int TWEET_INCREMENT = 15;
     private final AuthorizationRemoteDataSource mAuthorizationDataManager;
     private final SialiaLocalDataSource mSialiaLocalDataSource;
     private final TwitterService mTwitterService;
@@ -49,22 +49,18 @@ public class ApplicationDataManager {
         return mUser;
     }
 
-    public String getToken() {
-        return mAuthorizationDataManager.getToken();
-    }
+    public void saveReceivedOAuthData(Context context) {
+        String userKey = mAuthorizationDataManager.getToken();
+        String userSecret = mAuthorizationDataManager.getTokenSecret();
 
-    public String getTokenSecret() {
-        return mAuthorizationDataManager.getTokenSecret();
-    }
-
-    public void setOAuthUserKey(Context context, String userKey) {
         mSialiaLocalDataSource.setOAuthUserKey(context, userKey);
-    }
-
-    public void setOAuthUserSecret(Context context, String userSecret) {
         mSialiaLocalDataSource.setOAuthUserSecret(context, userSecret);
     }
 
+    /**
+     * Set saved token to tokenSecret for OkHttp interceptor
+     * @param context
+     */
     public void setTokenAndSecret(Context context) {
         String token = checkNotNull(mSialiaLocalDataSource.getOAuthUserKey(context));
         String tokenSecret = checkNotNull(mSialiaLocalDataSource.getOAuthUserSecret(context));
@@ -81,7 +77,7 @@ public class ApplicationDataManager {
         return mAuthorizationDataManager.retrieveRequestToken(callbackUrl);
     }
 
-    public Completable obtainVerifier(Intent intent) {
+    public Completable retrieveAccessToken(Intent intent) {
         String oauthVerifier = mAuthorizationDataManager.getOAuthVerifier(intent.getData());
         return mAuthorizationDataManager.retrieveAccessToken(oauthVerifier);
 

@@ -2,6 +2,7 @@ package com.slgunz.root.sialia.ui.home;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.data.model.Tweet;
@@ -103,7 +104,6 @@ class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void loadPreviousTweets(Long lowestId) {
-        setWaitingIndicator(true);
         fillHomeTimeline(
                 // request to server
                 () -> mAppDataManager.loadPreviousHomeTimelineTweets(lowestId),
@@ -112,7 +112,6 @@ class HomePresenter implements HomeContract.Presenter {
                     if (mHomeView != null) {
                         mHomeView.appendToAdapterList(tweets);
                     }
-                    setWaitingIndicator(false);
                 }
         );
     }
@@ -129,6 +128,9 @@ class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void sendTweet(String message) {
+        if(mHomeView!= null){
+            mHomeView.enableSendTweetButton(false);
+        }
         Disposable disposable = mAppDataManager.sendTweet(message)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
@@ -161,5 +163,10 @@ class HomePresenter implements HomeContract.Presenter {
     @Override
     public void unsubscribe() {
         mDisposables.clear();
+    }
+
+    @VisibleForTesting
+    public void setHomeView(HomeContract.View homeView){
+        this.mHomeView = homeView;
     }
 }

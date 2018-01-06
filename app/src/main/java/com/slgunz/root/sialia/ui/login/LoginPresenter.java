@@ -3,6 +3,7 @@ package com.slgunz.root.sialia.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.di.ActivityScoped;
@@ -21,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class LoginPresenter implements LoginContract.Presenter {
 
     @NonNull
-    private ApplicationDataManager mSialiaDataManager;
+    private ApplicationDataManager mAppDataManager;
     @NonNull
     private LoginContract.View mLoginView;
     @NonNull
@@ -33,7 +34,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     public LoginPresenter(@NonNull ApplicationDataManager sialiaDataManager,
                           @NonNull LoginActivity loginActivity,
                           @NonNull BaseSchedulerProvider schedulerProvider) {
-        mSialiaDataManager = checkNotNull(sialiaDataManager, "Login Application DataManager cannot be null");
+        mAppDataManager = checkNotNull(sialiaDataManager, "Login Application DataManager cannot be null");
         mLoginView = checkNotNull(loginActivity, "Login Fragment cannot be null");
         mScheduler = checkNotNull(schedulerProvider, "Login SchedulerProvider cannot be null");
     }
@@ -41,7 +42,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void openAuthenticatePage(String callback_url) {
         mLoginView.setWaitingIndicator(true);
-        Disposable disposable = mSialiaDataManager.openAuthenticatePage(callback_url)
+        Disposable disposable = mAppDataManager.openAuthenticatePage(callback_url)
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
@@ -63,23 +64,18 @@ public class LoginPresenter implements LoginContract.Presenter {
     public void obtainVerifier(String callback_url, Context context, Intent verifier) {
         mLoginView.setWaitingIndicator(false);
 
-        if (mSialiaDataManager.isNotCorrectVerifier(callback_url, verifier)) {
+        if (mAppDataManager.isNotCorrectVerifier(callback_url, verifier)) {
             showErrorMessage(new InvalidParameterException("returned verifier isn't correct"));
             return;
         }
 
-        Disposable disposable = mSialiaDataManager.obtainVerifier(verifier)
+        Disposable disposable = mAppDataManager.retrieveAccessToken(verifier)
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
                         // onComplete
                         () -> {
-                            String token = mSialiaDataManager.getToken();
-                            String tokenSecret = mSialiaDataManager.getTokenSecret();
-
-                            mSialiaDataManager.setOAuthUserKey(context, token);
-                            mSialiaDataManager.setOAuthUserSecret(context, tokenSecret);
-
+                            mAppDataManager.saveReceivedOAuthData(context);
                             verifyAccountCredentials();
                         },
                         // onError
@@ -94,13 +90,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         mLoginView.enableLoginButton(false);
 
-        Disposable disposable = mSialiaDataManager.verifyCredentials()
+        Disposable disposable = mAppDataManager.verifyCredentials()
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
                         // onSuccess
                         user -> {
-                            mSialiaDataManager.setAccountProfile(user);
+                            mAppDataManager.setAccountProfile(user);
                             mLoginView.enableLoginButton(true);
                             mLoginView.openHomeScreen();
                         },
@@ -115,12 +111,12 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void setTokenAndSecret(Context context) {
-        mSialiaDataManager.setTokenAndSecret(context);
+        mAppDataManager.setTokenAndSecret(context);
     }
 
     @Override
     public boolean hasSavedOAuthData(Context context) {
-        return mSialiaDataManager.hasTokenAndSecret(context);
+        return mAppDataManager.hasTokenAndSecret(context);
     }
 
     @Override

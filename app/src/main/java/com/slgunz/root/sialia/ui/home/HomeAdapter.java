@@ -62,14 +62,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TweetHolder> {
         List<Media> mediaList = tweet.getEntities().getMedia();
         if (mediaList != null){
             Media media = Iterables.getFirst((mediaList), null);
-            Log.d("ASS", media.getMediaUrl());
             fullRequest
                     .load(media.getMediaUrl())
                     .into(holder.mMediaImageView);
             holder.mMediaImageView.setVisibility(View.VISIBLE);
         }else{
             holder.mMediaImageView.setVisibility(View.GONE);
-            Log.d("ASS", "no URL outer");
         }
 
         holder.bindTweet(tweet);
