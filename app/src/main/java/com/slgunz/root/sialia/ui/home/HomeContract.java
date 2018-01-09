@@ -26,8 +26,6 @@ public interface HomeContract {
         void insertBeforeToAdapterList(List<Tweet> tweets);
 
         void appendToAdapterList(List<Tweet> tweets);
-
-        void enableSendTweetButton(boolean isEnable);
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -41,7 +39,5 @@ public interface HomeContract {
         void checkForNewTweets();
 
         void search(String request);
-
-        void sendTweet(String message);
     }
 }

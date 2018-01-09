@@ -1,6 +1,7 @@
 package com.slgunz.root.sialia.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -11,8 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,7 +23,10 @@ import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
 import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.ui.addtweet.AddTweetActivity;
 import com.slgunz.root.sialia.ui.common.EndlessRecyclerViewScrollListener;
+import com.slgunz.root.sialia.ui.common.TweetAdapter;
+import com.slgunz.root.sialia.ui.tweetdetail.TweetDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +44,13 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
 
     private boolean mCantRequestNewTweets = true;
 
-    private HomeAdapter mHomeAdapter;
+    private TweetAdapter mTweetAdapter;
 
     private SwipyRefreshLayout mSwipyRefreshLayout;
 
     private RecyclerView mHomeRecyclerView;
 
     private ProgressBar mProgressBar;
-
-    private Button mNewTweetSendButton;
-
-    private EditText mNewTweetEditView;
 
     private ImageView mAccountProfileImage;
 
@@ -68,7 +66,7 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHomeAdapter = new HomeAdapter(new ArrayList<>(0));
+        mTweetAdapter = new TweetAdapter(new ArrayList<>(0));
     }
 
     @Nullable
@@ -76,6 +74,9 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.home_frag, container, false);
+
+        // set onClick callback; occurs when user select tweet
+        mTweetAdapter.setCallback(this::openTweetDetailPage);
 
         //Setup both swipe refresh layout
         mSwipyRefreshLayout = root.findViewById(R.id.home_swipy_refresh_layout);
@@ -92,12 +93,12 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
                     }
                     // set an action for swipe up
                     if(direction == SwipyRefreshLayoutDirection.TOP){
-                        mPresenter.loadRecentTweets(mHomeAdapter.getTheBiggestId());
+                        mPresenter.loadRecentTweets(mTweetAdapter.getTheBiggestId());
                         mCantRequestNewTweets = true;
                     }
                     // for swipe down
                     if(direction == SwipyRefreshLayoutDirection.BOTTOM){
-                        mPresenter.loadPreviousTweets(mHomeAdapter.getTheLowestId());
+                        mPresenter.loadPreviousTweets(mTweetAdapter.getTheLowestId());
                         mCantRequestNewTweets = true;
                     }
                 }
@@ -105,7 +106,7 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
 
         mHomeRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        mHomeRecyclerView.setAdapter(mHomeAdapter);
+        mHomeRecyclerView.setAdapter(mTweetAdapter);
         // set custom ScrollListener for loading previous tweets
         EndlessRecyclerViewScrollListener listener =
                 new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -117,37 +118,11 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
         mHomeRecyclerView.addOnScrollListener(listener);
         mHomeRecyclerView.setLayoutManager(linearLayoutManager);
 
-        View newTweetLayout = root.findViewById(R.id.home_included_layout);
-
-        mNewTweetEditView = root.findViewById(R.id.new_tweet_text);
-
-        mNewTweetSendButton = root.findViewById(R.id.new_tweet_send_button);
-        mNewTweetSendButton.setOnClickListener(view -> {
-            String message = mNewTweetEditView.getText().toString();
-            mPresenter.sendTweet(message);
-            // clear text
-            mNewTweetEditView.setText("");
-        });
-
         // set up floating action button
         FloatingActionButton fab =
                 getActivity().findViewById(R.id.fab_tweet);
         fab.setImageResource(R.drawable.ic_add);
-        fab.setOnClickListener(new View.OnClickListener() {
-            boolean visible;
-
-            @Override
-            public void onClick(View view) {
-                visible = !visible;
-                if (visible) {
-                    newTweetLayout.setVisibility(View.VISIBLE);
-                    fab.setImageResource(R.drawable.ic_undo);
-                } else {
-                    newTweetLayout.setVisibility(View.GONE);
-                    fab.setImageResource(R.drawable.ic_add);
-                }
-            }
-        });
+        fab.setOnClickListener(view -> openAddTweetScreen());
 
         mProgressBar = root.findViewById(R.id.home_progress_bar);
 
@@ -177,9 +152,6 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
 //    HomeContract.View interface
 //    ------------------------------------------
 
-    /**
-     * @param isActive
-     */
     @Override
     public void setWaitingIndicator(boolean isActive) {
         mProgressBar.setVisibility(isActive ? View.VISIBLE : View.INVISIBLE);
@@ -225,27 +197,33 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
 
     @Override
     public void setAdapterList(List<Tweet> tweets) {
-        mHomeAdapter.replaceData(tweets);
+        mTweetAdapter.replaceData(tweets);
         mCantRequestNewTweets = false;
     }
 
     @Override
     public void insertBeforeToAdapterList(List<Tweet> tweets) {
-        mHomeAdapter.replaceData(tweets);
+        mTweetAdapter.replaceData(tweets);
         mSwipyRefreshLayout.setRefreshing(false);
         mCantRequestNewTweets = false;
     }
 
     @Override
     public void appendToAdapterList(List<Tweet> tweets) {
-        mHomeAdapter.appendData(tweets);
+        mTweetAdapter.appendData(tweets);
         mSwipyRefreshLayout.setRefreshing(false);
         mCantRequestNewTweets = false;
         mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.TOP);
     }
 
-    @Override
-    public void enableSendTweetButton(boolean isEnable) {
-        mNewTweetSendButton.setEnabled(isEnable);
+    public void openAddTweetScreen(){
+        Intent intent =  new Intent(getActivity(), AddTweetActivity.class);
+        startActivity(intent);
+    }
+
+    public void openTweetDetailPage(Tweet tweet) {
+        Intent intent = TweetDetailActivity.newIntent(getActivity(),
+                tweet.getId(), tweet.getUser().getId());
+        startActivity(intent);
     }
 }

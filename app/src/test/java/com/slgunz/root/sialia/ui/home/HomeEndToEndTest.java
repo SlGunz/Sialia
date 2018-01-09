@@ -85,17 +85,6 @@ public class HomeEndToEndTest {
     }
 
     @Test
-    public void successfulSendingTweetViaFAB() {
-        when(appManager.sendTweet(anyString())).thenReturn(Single.just(new Tweet()));
-        presenter.setHomeView(mView);
-
-        presenter.sendTweet(anyString());
-        verify(mView).enableSendTweetButton(false);
-        verify(appManager).sendTweet(anyString());
-        verify(mView).enableSendTweetButton(true);
-    }
-
-    @Test
     public void checkForNewTweetsOnServerByTimer() {
         presenter.checkForNewTweets();
         mView.showNewTweetsNotification(3);

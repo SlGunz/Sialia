@@ -29,13 +29,14 @@ class HomePresenter implements HomeContract.Presenter {
     @Nullable
     private HomeContract.View mHomeView;
 
-    private CompositeDisposable mDisposables = new CompositeDisposable();
+    private CompositeDisposable mDisposables;
 
     @Inject
     HomePresenter(@NonNull ApplicationDataManager applicationDataManager,
                   @NonNull BaseSchedulerProvider schedulerProvider) {
         mAppDataManager = applicationDataManager;
         mScheduler = schedulerProvider;
+        mDisposables = new CompositeDisposable();
     }
 
     interface RequestToServer {
@@ -124,31 +125,6 @@ class HomePresenter implements HomeContract.Presenter {
     @Override
     public void search(String request) {
 
-    }
-
-    @Override
-    public void sendTweet(String message) {
-        if(mHomeView!= null){
-            mHomeView.enableSendTweetButton(false);
-        }
-        Disposable disposable = mAppDataManager.sendTweet(message)
-                .subscribeOn(mScheduler.io())
-                .observeOn(mScheduler.ui())
-                .subscribe(
-                        //onSuccess
-                        tweet -> {
-                            if (mHomeView != null) {
-                                mHomeView.enableSendTweetButton(true);
-                            }
-                        },
-                        //onError
-                        throwable -> {
-                            if (mHomeView != null) {
-                                mHomeView.showErrorMessage(throwable);
-                            }
-                        }
-                );
-        mDisposables.add(disposable)      ;
     }
 
     @Override

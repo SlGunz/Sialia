@@ -14,7 +14,9 @@
         <item name="buttonStyle">@style/Base.Button</item>
     </style>
 
-    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="Base.Button" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@android:color/white</item>

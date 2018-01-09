@@ -33,6 +33,24 @@
         </activity>
         <activity android:name=".ui.home.HomeActivity" />
         <activity android:name=".ui.messages.MessagesActivity" />
+        <activity
+            android:name=".ui.addtweet.AddTweetActivity"
+            android:label="@string/title_activity_add_new"
+            android:parentActivityName=".ui.home.HomeActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.slgunz.root.sialia.ui.home.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".ui.tweetdetail.TweetDetailActivity"
+            android:label="@string/title_activity_tweet_detial"
+            android:parentActivityName=".ui.home.HomeActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.slgunz.root.sialia.ui.home.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

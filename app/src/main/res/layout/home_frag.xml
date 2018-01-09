@@ -16,11 +16,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/home_included_layout"
-                layout="@layout/send_tweet_layout"
-                android:visibility="gone" />
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/home_timeline_recycler_view"
                 android:layout_width="match_parent"

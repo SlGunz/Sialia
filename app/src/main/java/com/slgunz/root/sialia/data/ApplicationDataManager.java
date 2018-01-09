@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.slgunz.root.sialia.data.model.Banners;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
 import com.slgunz.root.sialia.data.source.local.SialiaLocalDataSource;
@@ -118,5 +119,13 @@ public class ApplicationDataManager {
 
     public Single<Tweet> sendTweet(String message) {
         return mTwitterService.postStatusUpdate(message);
+    }
+
+    public Single<List<Tweet>> loadRetweetedTweets(Long id){
+        return mTwitterService.getStatusesRetweet(id, TWEET_COUNT);
+    }
+
+    public Single<Banners> loadUserProfileBanner(Long userId){
+        return mTwitterService.getUserProfileBanner(userId);
     }
 }

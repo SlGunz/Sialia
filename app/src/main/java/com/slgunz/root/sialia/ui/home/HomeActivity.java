@@ -44,7 +44,7 @@ public class HomeActivity extends DaggerAppCompatActivity {
             setDrawerContent(navigationView);
         }
 
-        // Create presenter
+        // Create view
         HomeFragment homeFragment =
                 (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         // Load previous state if available
