@@ -37,6 +37,10 @@ public interface TwitterService {
     @POST("1.1/statuses/update.json")
     Single<Tweet> postStatusUpdate(@Field("status") String status);
 
+    @GET("1.1/statuses/mentions_timeline.json")
+    Single<List<Tweet>> getStatusesMentionsTimeline(@Query("count") Integer count,
+                                                @Query("since_id") Long since_id,
+                                                @Query("max_id") Long max_id);
 
     @GET("1.1/account/settings.json")
     Call<String> settings();

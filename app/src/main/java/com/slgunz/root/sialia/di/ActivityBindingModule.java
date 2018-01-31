@@ -6,6 +6,8 @@ import com.slgunz.root.sialia.ui.home.HomeActivity;
 import com.slgunz.root.sialia.ui.home.HomeModule;
 import com.slgunz.root.sialia.ui.login.LoginActivity;
 import com.slgunz.root.sialia.ui.login.LoginModule;
+import com.slgunz.root.sialia.ui.notification.NotificationActivity;
+import com.slgunz.root.sialia.ui.notification.NotificationModule;
 import com.slgunz.root.sialia.ui.tweetdetail.TweetDetailActivity;
 import com.slgunz.root.sialia.ui.tweetdetail.TweetDetailModule;
 
@@ -37,4 +39,8 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = TweetDetailModule.class)
     abstract TweetDetailActivity tweetDetailActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = NotificationModule.class)
+    abstract NotificationActivity notificationActivity();
 }

@@ -128,4 +128,8 @@ public class ApplicationDataManager {
     public Single<Banners> loadUserProfileBanner(Long userId){
         return mTwitterService.getUserProfileBanner(userId);
     }
+
+    public Single<List<Tweet>> loadMentionsTweets() {
+        return mTwitterService.getStatusesMentionsTimeline(TWEET_COUNT, null, null);
+    }
 }

@@ -18,13 +18,7 @@ import com.slgunz.root.sialia.data.source.remote.GlideRequests;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * -------------------------------------------------
- * RecyclerView.Adapter
- * -------------------------------------------------
- */
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder> {
 
     public interface Callback {
@@ -82,7 +76,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
         return mTweets.size();
     }
 
-    public void setCallback(Callback callback){
+    public void setCallback(Callback callback) {
         mCallback = callback;
     }
 
@@ -97,21 +91,26 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     }
 
     public void appendData(List<Tweet> tweets) {
+        if(tweets == null){
+            return;
+        }
         int start = mTweets.size();
         mTweets.addAll(start, tweets);
         notifyItemRangeInserted(start, tweets.size());
     }
 
     public void replaceData(List<Tweet> tweets) {
-        this.mTweets = checkNotNull(tweets);
+        if(tweets == null){
+            return;
+        }
+        this.mTweets = (tweets);
         notifyDataSetChanged();
     }
 
-    /**
-     * -------------------------------------------------
-     * RecyclerView.ViewHolder
-     * ------------------------------------------------
-     */
+    ///////////////////////////////////////////////////////////////////////////
+    // RecyclerView.ViewHolder
+    ///////////////////////////////////////////////////////////////////////////
+
     public static class TweetHolder extends RecyclerView.ViewHolder {
 
         ImageView mAccountProfileImageView;

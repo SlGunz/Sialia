@@ -21,7 +21,7 @@ public class AddTweetPresenter implements AddTweetContract.Presenter {
     @Nullable
     private AddTweetContract.View mView;
 
-    private CompositeDisposable mDisposables = new CompositeDisposable();
+    private CompositeDisposable mDisposables;
 
     @Inject
     AddTweetPresenter(@NonNull ApplicationDataManager applicationDataManager,

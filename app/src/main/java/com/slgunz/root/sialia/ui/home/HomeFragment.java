@@ -25,6 +25,7 @@ import com.slgunz.root.sialia.data.model.User;
 import com.slgunz.root.sialia.di.ActivityScoped;
 import com.slgunz.root.sialia.ui.addtweet.AddTweetActivity;
 import com.slgunz.root.sialia.ui.common.EndlessRecyclerViewScrollListener;
+import com.slgunz.root.sialia.ui.common.ScrollChildSwipyRefreshLayout;
 import com.slgunz.root.sialia.ui.common.TweetAdapter;
 import com.slgunz.root.sialia.ui.tweetdetail.TweetDetailActivity;
 
@@ -46,7 +47,7 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
 
     private TweetAdapter mTweetAdapter;
 
-    private SwipyRefreshLayout mSwipyRefreshLayout;
+    private ScrollChildSwipyRefreshLayout mSwipyRefreshLayout;
 
     private RecyclerView mHomeRecyclerView;
 
@@ -78,6 +79,20 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
         // set onClick callback; occurs when user select tweet
         mTweetAdapter.setCallback(this::openTweetDetailPage);
 
+        mHomeRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mHomeRecyclerView.setAdapter(mTweetAdapter);
+        // set custom ScrollListener for loading previous tweets
+        EndlessRecyclerViewScrollListener listener =
+                new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount) {
+                        mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
+                    }
+                };
+        mHomeRecyclerView.addOnScrollListener(listener);
+        mHomeRecyclerView.setLayoutManager(linearLayoutManager);
+
         //Setup both swipe refresh layout
         mSwipyRefreshLayout = root.findViewById(R.id.home_swipy_refresh_layout);
         mSwipyRefreshLayout.setColorSchemeColors(
@@ -85,6 +100,7 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
         );
+        mSwipyRefreshLayout.setScrollUpChild(mHomeRecyclerView);
 
         mSwipyRefreshLayout.setOnRefreshListener(
                 direction -> {
@@ -103,20 +119,6 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
                     }
                 }
         );
-
-        mHomeRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        mHomeRecyclerView.setAdapter(mTweetAdapter);
-        // set custom ScrollListener for loading previous tweets
-        EndlessRecyclerViewScrollListener listener =
-                new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
-            }
-        };
-        mHomeRecyclerView.addOnScrollListener(listener);
-        mHomeRecyclerView.setLayoutManager(linearLayoutManager);
 
         // set up floating action button
         FloatingActionButton fab =
@@ -148,9 +150,9 @@ public class HomeFragment extends DaggerFragment implements HomeContract.View {
         mPresenter.unsubscribe();
     }
 
-//    ------------------------------------------
-//    HomeContract.View interface
-//    ------------------------------------------
+    ///////////////////////////////////////////////////////////////////////////
+    // HomeContract.View interface
+    ///////////////////////////////////////////////////////////////////////////
 
     @Override
     public void setWaitingIndicator(boolean isActive) {

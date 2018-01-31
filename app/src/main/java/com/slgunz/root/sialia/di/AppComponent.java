@@ -25,10 +25,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 })
 public interface AppComponent extends AndroidInjector<DaggerApplication> {
 
-//    SialiaDataManagerImpl getSialiaDataManager();
-
-//    void inject(SialiaApplication application);
-
     @Override
     void inject(DaggerApplication instance);
 
