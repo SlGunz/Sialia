@@ -1,5 +1,7 @@
 package com.slgunz.root.sialia.ui.home;
 
+import android.content.Context;
+
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
 import com.slgunz.root.sialia.ui.BasePresenter;
@@ -26,6 +28,8 @@ public interface HomeContract {
         void insertBeforeToAdapterList(List<Tweet> tweets);
 
         void appendToAdapterList(List<Tweet> tweets);
+
+        Context getContext();
     }
 
     interface Presenter extends BasePresenter<View> {

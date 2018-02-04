@@ -7,7 +7,6 @@ import com.slgunz.root.sialia.data.model.User;
 import java.util.List;
 
 import io.reactivex.Single;
-
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -23,8 +22,8 @@ public interface TwitterService {
 
     @GET("/1.1/statuses/home_timeline.json")
     Single<List<Tweet>> getStatusesHomeTimeline(@Query("count") Integer count,
-                                                    @Query("since_id") Long since_id,
-                                                    @Query("max_id") Long max_id);
+                                                @Query("since_id") Long since_id,
+                                                @Query("max_id") Long max_id);
 
     @GET("1.1/users/profile_banner.json")
     Single<Banners> getUserProfileBanner(@Query("user_id") Long user_id);
@@ -39,8 +38,12 @@ public interface TwitterService {
 
     @GET("1.1/statuses/mentions_timeline.json")
     Single<List<Tweet>> getStatusesMentionsTimeline(@Query("count") Integer count,
-                                                @Query("since_id") Long since_id,
-                                                @Query("max_id") Long max_id);
+                                                    @Query("since_id") Long since_id,
+                                                    @Query("max_id") Long max_id);
+
+    @GET("/1.1/statuses/home_timeline.json")
+    Call<List<Tweet>> getStatusesHomeTimelineRecent(@Query("count") Integer count,
+                                                    @Query("since_id") Long since_id);
 
     @GET("1.1/account/settings.json")
     Call<String> settings();

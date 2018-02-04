@@ -3,6 +3,7 @@ package com.slgunz.root.sialia.data;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 
 import com.slgunz.root.sialia.data.model.Banners;
 import com.slgunz.root.sialia.data.model.Tweet;
@@ -11,6 +12,7 @@ import com.slgunz.root.sialia.data.source.local.SialiaLocalDataSource;
 import com.slgunz.root.sialia.data.source.remote.AuthorizationRemoteDataSource;
 import com.slgunz.root.sialia.data.source.remote.TwitterService;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import retrofit2.Response;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,9 +30,13 @@ public class ApplicationDataManager {
 
     private static final int TWEET_COUNT = 30;
     private static final int TWEET_INCREMENT = 15;
+    private static final long DEFAULT_TWEET_ID = -1;
+    private static final String ALARM_STATUS_KEY = "alarmStatusKey";
     private final AuthorizationRemoteDataSource mAuthorizationDataManager;
     private final SialiaLocalDataSource mSialiaLocalDataSource;
     private final TwitterService mTwitterService;
+
+    private static final String KEY_LAST_TWEET_ID = "lastTweetId";
 
     private User mUser;
 
@@ -60,6 +67,7 @@ public class ApplicationDataManager {
 
     /**
      * Set saved token to tokenSecret for OkHttp interceptor
+     *
      * @param context
      */
     public void setTokenAndSecret(Context context) {
@@ -121,15 +129,61 @@ public class ApplicationDataManager {
         return mTwitterService.postStatusUpdate(message);
     }
 
-    public Single<List<Tweet>> loadRetweetedTweets(Long id){
+    public Single<List<Tweet>> loadRetweetedTweets(Long id) {
         return mTwitterService.getStatusesRetweet(id, TWEET_COUNT);
     }
 
-    public Single<Banners> loadUserProfileBanner(Long userId){
+    public Single<Banners> loadUserProfileBanner(Long userId) {
         return mTwitterService.getUserProfileBanner(userId);
     }
 
     public Single<List<Tweet>> loadMentionsTweets() {
         return mTwitterService.getStatusesMentionsTimeline(TWEET_COUNT, null, null);
     }
+
+    public static void setLastLoadedTweetId(Context context, Long tweetId) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putLong(KEY_LAST_TWEET_ID, tweetId)
+                .apply();
+    }
+
+    private static Long getLastLoadedTweetId(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getLong(KEY_LAST_TWEET_ID, DEFAULT_TWEET_ID);
+    }
+
+    public int checkNewTweets(Context context) throws IOException {
+        Long lastId = getLastLoadedTweetId(context);
+        if (lastId == DEFAULT_TWEET_ID) {
+            return 0;
+        }
+
+        Response<List<Tweet>> response = mTwitterService
+                // increment since_id according to Twitter API
+                .getStatusesHomeTimelineRecent(TWEET_COUNT, lastId + 1).execute();
+        if (response.isSuccessful() && response.body() != null) {
+            int counter = 0;
+            for (Tweet tweet : response.body()) {
+                if (tweet.getId() >= lastId) {
+                    counter++;
+                }
+            }
+            return counter;
+        }
+        return 0;
+    }
+
+    public static boolean isAlarmOn(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(ALARM_STATUS_KEY, false);
+    }
+
+    public static void setIsAlarmOn(Context context, boolean isOn) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean(ALARM_STATUS_KEY, isOn)
+                .apply();
+    }
+
 }

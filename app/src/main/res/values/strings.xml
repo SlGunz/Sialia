@@ -4,6 +4,18 @@
     <string name="navigation_header_account_name">User account</string>
     <string name="navigation_header_account_screen_name">/@UserScreenName</string>
 
+    <!--Notification message-->
+    <string name="note_tickle">You\'ve got new tweets</string>
+    <string name="note_title">Notification title</string>
+    <string name="note_content">You\'ve got %1$d new %2$s.</string>
+    <plurals name="tweets">
+        <item quantity="one">tweet</item>
+        <item quantity="other">tweets</item>
+    </plurals>
+
+    <string name="start_service">start notify</string>
+    <string name="stop_service">stop notify</string>
+
     <!-- NAVIGATION MENU -->
     <string name="home_title">Home</string>
     <string name="notification_title">Notification</string>

@@ -3,6 +3,7 @@ package com.slgunz.root.sialia.di;
 import android.app.Application;
 
 import com.slgunz.root.sialia.data.ApplicationDataModule;
+import com.slgunz.root.sialia.data.service.PollServiceModule;
 import com.slgunz.root.sialia.data.source.remote.NetworkModule;
 import com.slgunz.root.sialia.util.schedulers.SchedulerProviderModule;
 
@@ -21,6 +22,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         SchedulerProviderModule.class,
         AndroidSupportInjectionModule.class,
         ApplicationModule.class,
+        PollServiceModule.class,
         ActivityBindingModule.class
 })
 public interface AppComponent extends AndroidInjector<DaggerApplication> {

@@ -90,6 +90,9 @@ class HomePresenter implements HomeContract.Presenter {
     @Override
     public void loadRecentTweets(Long biggestId) {
         // doesn't activate waiting indicator, because SwipeRefreshLayout has it's own.
+        if(mHomeView != null){
+            ApplicationDataManager.setLastLoadedTweetId(mHomeView.getContext(), biggestId);
+        }
         fillHomeTimeline(
                 // request to server
                 mAppDataManager::loadHomeTimeLineTweets,

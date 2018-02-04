@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.slgunz.root.sialia">
 
+    <permission
+        android:name="com.slgunz.root.sialia.data.service.PRIVATE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.slgunz.root.sialia.data.service.PRIVATE"/>
 
     <application
         android:name=".SialiaApplication"
@@ -53,7 +59,19 @@
         <activity
             android:name=".ui.notification.NotificationActivity"
             android:label="@string/title_activity_notification"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+
+        <service android:name=".data.service.PollService" />
+        <receiver android:name=".data.receiver.StartupReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".data.receiver.NotificationReceiver" android:exported="false">
+            <intent-filter android:priority="-999">
+                <action android:name="com.slgunz.root.sialia.data.service.ACTION_SHOW_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
