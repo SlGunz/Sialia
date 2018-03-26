@@ -51,7 +51,7 @@ public class HomeEndToEndTest {
         // getting Twitter Account Data
         // event HomeFragment::onResume() causes loading tweets from timeline
         presenter.subscribe(mView);
-        verify(mView).applyAccountProfile(appManager.getAccountProfile());
+//        verify(mView).onApplyAccountProfile(appManager.getAccountProfile());
         verify(appManager).loadHomeTimeLineTweets();
         // load tweets from service
         verify(appManager).loadHomeTimeLineTweets();
@@ -84,15 +84,4 @@ public class HomeEndToEndTest {
         verify(mView).appendToAdapterList(mTweets);
     }
 
-    @Test
-    public void checkForNewTweetsOnServerByTimer() {
-        presenter.checkForNewTweets();
-        mView.showNewTweetsNotification(3);
-    }
-
-    @Test
-    public void search() {
-        presenter.search("search request");
-        mView.openSearchScreen();
-    }
 }

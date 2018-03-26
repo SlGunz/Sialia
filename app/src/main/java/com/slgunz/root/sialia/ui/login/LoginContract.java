@@ -3,7 +3,7 @@ package com.slgunz.root.sialia.ui.login;
 import android.content.Context;
 import android.content.Intent;
 
-import com.slgunz.root.sialia.ui.BasePresenter;
+import com.slgunz.root.sialia.ui.base.BaseContract;
 
 
 public interface LoginContract {
@@ -20,7 +20,7 @@ public interface LoginContract {
         void showErrorMessage(Throwable error);
     }
 
-    interface Presenter extends BasePresenter<View> {
+    interface Presenter extends BaseContract.Presenter {
 
         void openAuthenticatePage(String callback_url);
 

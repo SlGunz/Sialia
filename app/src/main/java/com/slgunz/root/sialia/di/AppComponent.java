@@ -2,9 +2,8 @@ package com.slgunz.root.sialia.di;
 
 import android.app.Application;
 
-import com.slgunz.root.sialia.data.ApplicationDataModule;
+import com.slgunz.root.sialia.util.oauth.AuthorizationHelperModule;
 import com.slgunz.root.sialia.data.service.PollServiceModule;
-import com.slgunz.root.sialia.data.source.remote.NetworkModule;
 import com.slgunz.root.sialia.util.schedulers.SchedulerProviderModule;
 
 import javax.inject.Singleton;
@@ -18,7 +17,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Singleton
 @Component(modules = {
         NetworkModule.class,
-        ApplicationDataModule.class,
+        AuthorizationHelperModule.class,
         SchedulerProviderModule.class,
         AndroidSupportInjectionModule.class,
         ApplicationModule.class,

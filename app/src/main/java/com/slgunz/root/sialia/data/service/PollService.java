@@ -3,17 +3,22 @@ package com.slgunz.root.sialia.data.service;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.ApplicationDataManager;
+import com.slgunz.root.sialia.data.source.local.PreferenceHelper;
 import com.slgunz.root.sialia.ui.login.LoginActivity;
 
 import java.io.IOException;
@@ -31,9 +36,9 @@ public class PollService extends DaggerIntentService {
 
     private static final long TIME_INTERVAL = 1000 * 60;    // one minute
 
-    private static final String ACTION_SHOW_NOTIFICATION =
+    public static final String ACTION_SHOW_NOTIFICATION =
             "com.slgunz.root.sialia.data.service.ACTION_SHOW_NOTIFICATION";
-    private static final String PERM_PRIVATE = "com.slgunz.root.sialia.data.service.PRIVATE";
+    public static final String PERM_PRIVATE = "com.slgunz.root.sialia.data.service.PRIVATE";
 
     public static final String CHANNEL_SIALIA = "com.slgunz.root.sialia.data.service.SIALIA";
 
@@ -72,9 +77,9 @@ public class PollService extends DaggerIntentService {
 
         Notification notification = new NotificationCompat
                 .Builder(this, CHANNEL_SIALIA)
-                .setTicker(res.getString(R.string.note_tickle))
+                .setTicker(res.getString(R.string.notification_tickle_main))
                 .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle(res.getString(R.string.notification_title))
+                .setContentTitle(res.getString(R.string.notification_title_main))
                 .setContentText(noteText)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true)
@@ -99,7 +104,7 @@ public class PollService extends DaggerIntentService {
             pIntent.cancel();
         }
         Log.d(TAG, "startServiceAlarm: " + isOn);
-        ApplicationDataManager.setIsAlarmOn(context, isOn);
+        PreferenceHelper.setIsAlarmOn(context, isOn);
     }
 
     public static boolean isAlarmOn(Context context) {
@@ -108,5 +113,21 @@ public class PollService extends DaggerIntentService {
         PendingIntent pIntent = PendingIntent.getService(context, 0, intent,
                 PendingIntent.FLAG_NO_CREATE);
         return pIntent != null;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void createNotificationChannel(Context context) {
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(
+                PollService.CHANNEL_SIALIA,
+                NotificationChannel.DEFAULT_CHANNEL_ID,
+                importance
+        );
+        channel.setDescription(context.getString(R.string.notificaton_channel_description));
+        NotificationManager nm =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.createNotificationChannel(channel);
+        }
     }
 }

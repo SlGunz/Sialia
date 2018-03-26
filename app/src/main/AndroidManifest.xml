@@ -8,7 +8,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="com.slgunz.root.sialia.data.service.PRIVATE"/>
+    <uses-permission android:name="com.slgunz.root.sialia.data.service.PRIVATE" />
 
     <application
         android:name=".SialiaApplication"
@@ -20,7 +20,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.login.LoginActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,7 +42,6 @@
         <activity
             android:name=".ui.addtweet.AddTweetActivity"
             android:label="@string/title_activity_add_new"
-            android:parentActivityName=".ui.home.HomeActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -49,8 +49,6 @@
         </activity>
         <activity
             android:name=".ui.tweetdetail.TweetDetailActivity"
-            android:label="@string/title_activity_tweet_detail"
-            android:parentActivityName=".ui.home.HomeActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -58,20 +56,31 @@
         </activity>
         <activity
             android:name=".ui.notification.NotificationActivity"
-            android:label="@string/title_activity_notification"
             android:theme="@style/AppTheme" />
 
         <service android:name=".data.service.PollService" />
+
         <receiver android:name=".data.receiver.StartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".data.receiver.NotificationReceiver" android:exported="false">
+        <receiver
+            android:name=".data.receiver.NotificationReceiver"
+            android:exported="false">
             <intent-filter android:priority="-999">
-                <action android:name="com.slgunz.root.sialia.data.service.ACTION_SHOW_NOTIFICATION"/>
+                <action android:name="com.slgunz.root.sialia.data.service.ACTION_SHOW_NOTIFICATION" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.slgunz.root.sialia.ui.home.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

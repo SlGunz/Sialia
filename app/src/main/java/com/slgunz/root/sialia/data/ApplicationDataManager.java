@@ -3,15 +3,15 @@ package com.slgunz.root.sialia.data;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 
 import com.slgunz.root.sialia.data.model.Banners;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
-import com.slgunz.root.sialia.data.source.local.SialiaLocalDataSource;
-import com.slgunz.root.sialia.data.source.remote.AuthorizationRemoteDataSource;
+import com.slgunz.root.sialia.data.source.local.PreferenceHelper;
 import com.slgunz.root.sialia.data.source.remote.TwitterService;
+import com.slgunz.root.sialia.util.oauth.AuthorizationHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,6 +20,9 @@ import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Response;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,21 +34,16 @@ public class ApplicationDataManager {
     private static final int TWEET_COUNT = 30;
     private static final int TWEET_INCREMENT = 15;
     private static final long DEFAULT_TWEET_ID = -1;
-    private static final String ALARM_STATUS_KEY = "alarmStatusKey";
-    private final AuthorizationRemoteDataSource mAuthorizationDataManager;
-    private final SialiaLocalDataSource mSialiaLocalDataSource;
+    private final AuthorizationHelper mAuthorizationHelper;
     private final TwitterService mTwitterService;
 
-    private static final String KEY_LAST_TWEET_ID = "lastTweetId";
-
     private User mUser;
+    private Tweet mSelectedItem;
 
     @Inject
-    ApplicationDataManager(AuthorizationRemoteDataSource authorizationRemoteDataSource,
-                           SialiaLocalDataSource sialiaLocalDataSource,
+    ApplicationDataManager(AuthorizationHelper authorizationHelper,
                            TwitterService twitterService) {
-        mAuthorizationDataManager = checkNotNull(authorizationRemoteDataSource);
-        mSialiaLocalDataSource = checkNotNull(sialiaLocalDataSource);
+        mAuthorizationHelper = checkNotNull(authorizationHelper);
         mTwitterService = checkNotNull(twitterService);
     }
 
@@ -57,38 +55,46 @@ public class ApplicationDataManager {
         return mUser;
     }
 
-    public void saveReceivedOAuthData(Context context) {
-        String userKey = mAuthorizationDataManager.getToken();
-        String userSecret = mAuthorizationDataManager.getTokenSecret();
+    public void setSelectedItem(Tweet tweet) {
+        mSelectedItem = tweet;
+    }
 
-        mSialiaLocalDataSource.setOAuthUserKey(context, userKey);
-        mSialiaLocalDataSource.setOAuthUserSecret(context, userSecret);
+    public Tweet getSelectedItem() {
+        return mSelectedItem;
+    }
+
+    public void saveReceivedOAuthData(Context context) {
+        String userKey = mAuthorizationHelper.getToken();
+        String userSecret = mAuthorizationHelper.getTokenSecret();
+
+        PreferenceHelper.setOAuthUserKey(context, userKey);
+        PreferenceHelper.setOAuthUserSecret(context, userSecret);
     }
 
     /**
-     * Set saved token to tokenSecret for OkHttp interceptor
+     * Set saved token and tokenSecret for OkHttp interceptor
      *
      * @param context
      */
     public void setTokenAndSecret(Context context) {
-        String token = checkNotNull(mSialiaLocalDataSource.getOAuthUserKey(context));
-        String tokenSecret = checkNotNull(mSialiaLocalDataSource.getOAuthUserSecret(context));
+        String token = checkNotNull(PreferenceHelper.getOAuthUserKey(context));
+        String tokenSecret = checkNotNull(PreferenceHelper.getOAuthUserSecret(context));
 
-        mAuthorizationDataManager.setTokenAndSecret(token, tokenSecret);
+        mAuthorizationHelper.setTokenAndSecret(token, tokenSecret);
     }
 
     public boolean hasTokenAndSecret(Context context) {
-        return mSialiaLocalDataSource.hasUserKey(context) &&
-                mSialiaLocalDataSource.hasUserSecret(context);
+        return PreferenceHelper.hasUserKey(context) &&
+                PreferenceHelper.hasUserSecret(context);
     }
 
     public Single<String> openAuthenticatePage(String callbackUrl) {
-        return mAuthorizationDataManager.retrieveRequestToken(callbackUrl);
+        return mAuthorizationHelper.retrieveRequestToken(callbackUrl);
     }
 
     public Completable retrieveAccessToken(Intent intent) {
-        String oauthVerifier = mAuthorizationDataManager.getOAuthVerifier(intent.getData());
-        return mAuthorizationDataManager.retrieveAccessToken(oauthVerifier);
+        String oauthVerifier = mAuthorizationHelper.getOAuthVerifier(intent.getData());
+        return mAuthorizationHelper.retrieveAccessToken(oauthVerifier);
 
     }
 
@@ -110,23 +116,30 @@ public class ApplicationDataManager {
     }
 
     /**
-     * @param biggestId is a value with an ID greater than (that is, more recent than) the specified ID.
+     * @param maxId is a value with an ID greater than (that is, more recent than) the specified ID.
      *                  There are limits to the number of Tweets which can be accessed through the API.
      *                  If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available.
      */
-    public Single<List<Tweet>> loadRecentHomeTimelineTweets(Long biggestId) {
-        return loadHomeTimelineTweets(TWEET_COUNT, biggestId + 1, null);
+    public Single<List<Tweet>> loadRecentHomeTimelineTweets(Long maxId) {
+        return loadHomeTimelineTweets(TWEET_COUNT, maxId + 1, null);
     }
 
     /**
-     * @param lowestId is a value of an ID less than (that is, older than) or equal to the specified ID.
+     * @param minId is a value of an ID less than (that is, older than) or equal to the specified ID.
      */
-    public Single<List<Tweet>> loadPreviousHomeTimelineTweets(Long lowestId) {
-        return loadHomeTimelineTweets(TWEET_INCREMENT, null, lowestId - 1);
+    public Single<List<Tweet>> loadPreviousHomeTimelineTweets(Long minId) {
+        return loadHomeTimelineTweets(TWEET_INCREMENT, null, minId - 1);
     }
 
-    public Single<Tweet> sendTweet(String message) {
-        return mTwitterService.postStatusUpdate(message);
+    /**
+     * tweet and retweet messages
+     * @param message - message or @username (when retweet)
+     * @param retweetId
+     * @param mediaIds - media_id (use uploadImage() to attach picture)
+     * @return
+     */
+    public Single<Tweet> sendTweet(String message, Long retweetId, String mediaIds) {
+        return mTwitterService.postStatusUpdate(message, retweetId, mediaIds);
     }
 
     public Single<List<Tweet>> loadRetweetedTweets(Long id) {
@@ -141,20 +154,8 @@ public class ApplicationDataManager {
         return mTwitterService.getStatusesMentionsTimeline(TWEET_COUNT, null, null);
     }
 
-    public static void setLastLoadedTweetId(Context context, Long tweetId) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putLong(KEY_LAST_TWEET_ID, tweetId)
-                .apply();
-    }
-
-    private static Long getLastLoadedTweetId(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getLong(KEY_LAST_TWEET_ID, DEFAULT_TWEET_ID);
-    }
-
     public int checkNewTweets(Context context) throws IOException {
-        Long lastId = getLastLoadedTweetId(context);
+        Long lastId = PreferenceHelper.getLastLoadedTweetId(context, DEFAULT_TWEET_ID);
         if (lastId == DEFAULT_TWEET_ID) {
             return 0;
         }
@@ -174,16 +175,30 @@ public class ApplicationDataManager {
         return 0;
     }
 
-    public static boolean isAlarmOn(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(ALARM_STATUS_KEY, false);
+    public void setLastLoadedTweetId(Context context, Long biggestId) {
+        PreferenceHelper.setLastLoadedTweetId(context, biggestId);
     }
 
-    public static void setIsAlarmOn(Context context, boolean isOn) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean(ALARM_STATUS_KEY, isOn)
-                .apply();
+    public Single<Long> uploadImage(File file, String name) {
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part media =
+                MultipartBody.Part.createFormData(name, file.getName(), requestFile);
+
+        return mTwitterService.postMediaUpload(media);
     }
 
+    public Single<Tweet> setFavorite(boolean isFavorite, Long tweetId) {
+        if (isFavorite) {
+            return mTwitterService.postFavoriteCreate(tweetId);
+        }
+        return mTwitterService.postFavoriteDestroy(tweetId);
+    }
+
+    public Single<Tweet> setRetweeted(boolean isRetweeted, Long tweetId) {
+        if(isRetweeted){
+            return mTwitterService.postStatusRetweet(tweetId);
+        }
+        return mTwitterService.postStatusUnretweet(tweetId);
+    }
 }

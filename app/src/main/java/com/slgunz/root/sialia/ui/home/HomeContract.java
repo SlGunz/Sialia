@@ -3,8 +3,8 @@ package com.slgunz.root.sialia.ui.home;
 import android.content.Context;
 
 import com.slgunz.root.sialia.data.model.Tweet;
-import com.slgunz.root.sialia.data.model.User;
-import com.slgunz.root.sialia.ui.BasePresenter;
+import com.slgunz.root.sialia.ui.base.BaseContract;
+import com.slgunz.root.sialia.ui.base.BaseFragment;
 
 import java.util.List;
 
@@ -13,13 +13,7 @@ public interface HomeContract {
     interface View {
         void setWaitingIndicator(boolean isActive);
 
-        void applyAccountProfile(User user);
-
-        void openSearchScreen();
-
         void showErrorMessage(Throwable throwable);
-
-        void showNewTweetsNotification(int count);
 
         boolean isActive();
 
@@ -32,16 +26,12 @@ public interface HomeContract {
         Context getContext();
     }
 
-    interface Presenter extends BasePresenter<View> {
+    interface Presenter extends BaseContract.Presenter{
 
         void loadTweets();
 
-        void loadRecentTweets(Long biggestId);
+        void loadRecentTweets(Long maxId);
 
-        void loadPreviousTweets(Long lowestId);
-
-        void checkForNewTweets();
-
-        void search(String request);
+        void loadPreviousTweets(Long minId);
     }
 }

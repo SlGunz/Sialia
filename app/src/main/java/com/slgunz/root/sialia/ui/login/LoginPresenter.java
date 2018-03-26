@@ -6,7 +6,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
+import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.ui.base.BaseFragment;
 import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
 
 import java.security.InvalidParameterException;
@@ -120,10 +122,22 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void subscribe(LoginContract.View view) {}
+    public void subscribe(BaseFragment view) {
+
+    }
 
     @Override
     public void unsubscribe() {
         mDisposables.dispose();
+    }
+
+    @Override
+    public void selectItem(Tweet tweet) {
+
+    }
+
+    @Override
+    public Tweet currentItem() {
+        return null;
     }
 }

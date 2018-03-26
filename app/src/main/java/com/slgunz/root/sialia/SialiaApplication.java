@@ -1,5 +1,8 @@
 package com.slgunz.root.sialia;
 
+import android.os.Build;
+
+import com.slgunz.root.sialia.data.service.PollService;
 import com.slgunz.root.sialia.di.AppComponent;
 import com.slgunz.root.sialia.di.DaggerAppComponent;
 
@@ -16,6 +19,11 @@ public class SialiaApplication extends DaggerApplication {
                 .application(this)
                 .build();
         appComponent.inject(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PollService.createNotificationChannel(getApplicationContext());
+        }
+
         return appComponent;
     }
 }

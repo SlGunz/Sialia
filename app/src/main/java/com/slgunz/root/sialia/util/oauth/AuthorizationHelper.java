@@ -1,4 +1,4 @@
-package com.slgunz.root.sialia.data.source.remote;
+package com.slgunz.root.sialia.util.oauth;
 
 
 import android.net.Uri;
@@ -6,7 +6,7 @@ import android.net.Uri;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
-public interface AuthorizationRemoteDataSource {
+public interface AuthorizationHelper {
     Single<String> retrieveRequestToken(String callbackUrl);
 
     Completable retrieveAccessToken(String oauthVerifier);

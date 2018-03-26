@@ -8,18 +8,38 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
-        <item name="buttonStyle">@style/Base.Button</item>
+        <item name="buttonStyle">@style/SimpleButton</item>
+        <item name="android:buttonStyle">@style/SimpleButton</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="ToolbarPopup" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="Base.Button" parent="Widget.AppCompat.Button">
-        <item name="android:textColor">@android:color/white</item>
+    <style name="ButtonTweet" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/custom_gray</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_width">90dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="SimpleButton" parent="Widget.AppCompat.Button">
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/distinct_white</item>
+        <item name="android:background">@drawable/button_states_simple</item>
+    </style>
+
+    <style name="NavigationHeaderCounters" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@android:color/white</item>
     </style>
 
 </resources>

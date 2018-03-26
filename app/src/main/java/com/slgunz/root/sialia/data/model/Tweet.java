@@ -1,10 +1,11 @@
 
 package com.slgunz.root.sialia.data.model;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.slgunz.root.sialia.data.model.subtype.MatchingRule;
+
+import java.util.List;
 
 /*
 * https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/tweet-object
@@ -267,7 +268,7 @@ public class Tweet {
     }
 
     public Integer getReplyCount() {
-        return replyCount;
+        return replyCount == null ? 0 : replyCount;
     }
 
     public void setReplyCount(Integer replyCount) {
@@ -275,7 +276,7 @@ public class Tweet {
     }
 
     public Integer getRetweetCount() {
-        return retweetCount;
+        return retweetCount == null ? 0 : retweetCount;
     }
 
     public void setRetweetCount(Integer retweetCount) {
@@ -283,7 +284,7 @@ public class Tweet {
     }
 
     public Integer getFavoriteCount() {
-        return favoriteCount;
+        return favoriteCount == null ? 0 : favoriteCount;
     }
 
     public void setFavoriteCount(Integer favoriteCount) {

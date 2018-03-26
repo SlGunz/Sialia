@@ -7,6 +7,8 @@ import android.support.annotation.VisibleForTesting;
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.ui.base.BaseFragment;
+import com.slgunz.root.sialia.ui.base.BasePresenter;
 import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
 
 import java.util.List;
@@ -20,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 
 
 @ActivityScoped
-class HomePresenter implements HomeContract.Presenter {
+class HomePresenter extends BasePresenter implements HomeContract.Presenter {
 
     private final ApplicationDataManager mAppDataManager;
 
@@ -29,16 +31,15 @@ class HomePresenter implements HomeContract.Presenter {
     @Nullable
     private HomeContract.View mHomeView;
 
-    private CompositeDisposable mDisposables;
-
     @Inject
     HomePresenter(@NonNull ApplicationDataManager applicationDataManager,
                   @NonNull BaseSchedulerProvider schedulerProvider) {
+        super(applicationDataManager, schedulerProvider);
         mAppDataManager = applicationDataManager;
         mScheduler = schedulerProvider;
-        mDisposables = new CompositeDisposable();
     }
 
+    // TODO delete and substitute on io.reactive interface
     interface RequestToServer {
         Single<List<Tweet>> execute();
     }
@@ -48,7 +49,7 @@ class HomePresenter implements HomeContract.Presenter {
     }
 
     private void setWaitingIndicator(boolean isActive) {
-        if(mHomeView != null) {
+        if (mHomeView != null) {
             mHomeView.setWaitingIndicator(isActive);
         }
     }
@@ -62,13 +63,13 @@ class HomePresenter implements HomeContract.Presenter {
                         data::process,
                         // onError
                         throwable -> {
-                            if(mHomeView != null) {
+                            if (mHomeView != null) {
                                 mHomeView.showErrorMessage(throwable);
                             }
                             setWaitingIndicator(false);
                         }
                 );
-        mDisposables.add(disposable);
+        addDisposable(disposable);
     }
 
     @Override
@@ -88,10 +89,10 @@ class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void loadRecentTweets(Long biggestId) {
+    public void loadRecentTweets(Long maxId) {
         // doesn't activate waiting indicator, because SwipeRefreshLayout has it's own.
-        if(mHomeView != null){
-            ApplicationDataManager.setLastLoadedTweetId(mHomeView.getContext(), biggestId);
+        if (mHomeView != null) {
+            mAppDataManager.setLastLoadedTweetId(mHomeView.getContext(), maxId);
         }
         fillHomeTimeline(
                 // request to server
@@ -107,10 +108,10 @@ class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void loadPreviousTweets(Long lowestId) {
+    public void loadPreviousTweets(Long minId) {
         fillHomeTimeline(
                 // request to server
-                () -> mAppDataManager.loadPreviousHomeTimelineTweets(lowestId),
+                () -> mAppDataManager.loadPreviousHomeTimelineTweets(minId),
                 // update adapter
                 tweets -> {
                     if (mHomeView != null) {
@@ -121,31 +122,14 @@ class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void checkForNewTweets() {
-
-    }
-
-    @Override
-    public void search(String request) {
-
-    }
-
-    @Override
-    public void subscribe(HomeContract.View view) {
-        this.mHomeView = view;
-        if (mHomeView != null) {
-            mHomeView.applyAccountProfile(mAppDataManager.getAccountProfile());
-        }
+    public void subscribe(BaseFragment view) {
+        super.subscribe(view);
+        this.mHomeView = (HomeContract.View) view;
         loadTweets();
     }
 
-    @Override
-    public void unsubscribe() {
-        mDisposables.clear();
-    }
-
     @VisibleForTesting
-    public void setHomeView(HomeContract.View homeView){
+    public void setHomeView(HomeContract.View homeView) {
         this.mHomeView = homeView;
     }
 }

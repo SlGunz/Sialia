@@ -33,7 +33,7 @@ ext{
     compileSdkVersion = 27
     // App dependencies
     supportLibraryVersion = '27.0.2'
-    daggerAndroidVersion = '2.12'
+    daggerAndroidVersion = '2.14.1'
     retrofit2Version = '2.3.0'
     //
     junitVersion = '4.12'

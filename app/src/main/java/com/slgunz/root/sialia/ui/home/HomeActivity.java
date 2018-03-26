@@ -1,5 +1,6 @@
 package com.slgunz.root.sialia.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.slgunz.root.sialia.R;
+import com.slgunz.root.sialia.ui.base.BaseActivity;
+import com.slgunz.root.sialia.ui.base.BasePresenter;
 import com.slgunz.root.sialia.ui.notification.NotificationActivity;
+import com.slgunz.root.sialia.ui.settings.SettingsActivity;
 import com.slgunz.root.sialia.util.ActivityUtils;
 
 import javax.inject.Inject;
@@ -19,7 +24,7 @@ import javax.inject.Inject;
 import dagger.Lazy;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class HomeActivity extends DaggerAppCompatActivity {
+public class HomeActivity extends BaseActivity {
 
     @Inject
     Lazy<HomeFragment> mHomeFragment;
@@ -58,36 +63,17 @@ public class HomeActivity extends DaggerAppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Open the navigation drawer when the home icon is selected from the toolbar.
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
     }
 
-    private void setDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                (menuItem -> {
-                    switch (menuItem.getItemId()) {
-                        case R.id.nav_menu_item_home:
-                            // Do nothing, we're already on that screen
-                            break;
-                        case R.id.nav_menu_item_notification:
-                            Intent intent = new Intent(HomeActivity.this,
-                                    NotificationActivity.class);
-                            startActivity(intent);
-                            break;
-                        default:
-                            break;
-                    }
-                    // Close the navigation drawer when an item is selected.
-                    menuItem.setChecked(true);
-                    mDrawerLayout.closeDrawers();
-                    return true;
-                })
-        );
+    @Override
+    protected Context getContext() {
+        return HomeActivity.this;
+    }
+
+    @Override
+    protected int getLinkedMenuItem() {
+        return R.id.nav_menu_item_home;
     }
 }

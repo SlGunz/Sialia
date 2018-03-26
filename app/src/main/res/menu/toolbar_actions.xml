@@ -4,6 +4,6 @@
     <item
         android:id="@+id/service_switcher"
         android:icon="@drawable/ic_start_service"
-        android:title="@string/start_service"
+        android:title="@string/menu_item_start"
         app:showAsAction="never" />
 </menu>

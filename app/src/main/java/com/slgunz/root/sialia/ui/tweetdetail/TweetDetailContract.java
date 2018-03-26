@@ -1,16 +1,13 @@
 package com.slgunz.root.sialia.ui.tweetdetail;
 
 import com.slgunz.root.sialia.data.model.Tweet;
-import com.slgunz.root.sialia.ui.BasePresenter;
+import com.slgunz.root.sialia.ui.base.BaseContract;
 
 import java.util.List;
 
-/**
- * Created by root on 09.01.2018.
- */
 
 public interface TweetDetailContract {
-    interface View{
+    interface View {
 
         void setTweetOwnerBanner(String url);
 
@@ -19,8 +16,7 @@ public interface TweetDetailContract {
         void showErrorMessage(Throwable throwable);
     }
 
-    interface Presenter extends BasePresenter<View>{
+    interface Presenter extends BaseContract.Presenter {
 
-        void initialize(Long userId, Long tweetId);
     }
 }

@@ -1,38 +1,57 @@
 <resources>
     <string name="app_name">Sialia</string>
 
-    <string name="navigation_header_account_name">User account</string>
-    <string name="navigation_header_account_screen_name">/@UserScreenName</string>
+    <string name="button_title_reply">Reply</string>
+    <string name="button_title_retweet">Retweet</string>
+    <string name="button_title_favorite">Favorite</string>
+    <string name="button_title_image">Image</string>
+    <string name="button_title_login">Sign in with Twitter</string>
+    <string name="button_title_addtweet">Tweet</string>
+    <string name="button_title_gallery">Image gallery</string>
+    <string name="button_title_camera">Camera</string>
 
+    <string name="menu_item_home">Home</string>
+    <string name="menu_item_notification">Notification</string>
+    <string name="menu_item_logout">Log Out</string>
+    <string name="menu_item_favorite">Favorite</string>
+    <string name="menu_item_settings">Settings</string>
+    <string name="menu_item_start">start notify</string>
+    <string name="menu_item_stop">stop notify</string>
+
+    <string name="layout_title_tweets">Tweets</string>
+    <string name="layout_title_following">Following</string>
+    <string name="layout_title_followers">Followers</string>
+    <string name="layout_title_from">Take image from</string>
+    <string name="layout_title_notification">Show notification</string>
+    <string name="layout_title_reply">Reply</string>
+    <string name="layout_title_retweet">Retwet</string>
+    <string name="layout_title_favorite">Favorite</string>
+    <string name="layout_title_account_screen_name">/@account_name</string>
+    <string name="layout_title_account_name">Account Name</string>
+
+    <string name="image_description_background">Background</string>
+    <string name="image_description_mediacontent">Mediacontent</string>
+    <string name="image_description_profile">profile image</string>
+
+    <string name="error_message_fetching_image">Image not found</string>
+
+    <string name="dialog_message_favorite">Fuck it!</string>
+
+    <string name="hint_text_addtweet">What\'s happening?</string>
     <!--Notification message-->
-    <string name="note_tickle">You\'ve got new tweets</string>
-    <string name="note_title">Notification title</string>
+    <string name="notification_title_main">Notification</string>
+    <string name="notification_tickle_main">You\'ve got new tweets</string>
     <string name="note_content">You\'ve got %1$d new %2$s.</string>
     <plurals name="tweets">
         <item quantity="one">tweet</item>
         <item quantity="other">tweets</item>
     </plurals>
-
-    <string name="start_service">start notify</string>
-    <string name="stop_service">stop notify</string>
-
-    <!-- NAVIGATION MENU -->
-    <string name="home_title">Home</string>
-    <string name="notification_title">Notification</string>
-
-    <string name="login_button_title">sign in with Twitter</string>
-    <string name="profile_image_description">profile image</string>
-    <string name="addtweet_hint">What\'s happening?</string>
-    <string name="tweet_image_description">image</string>
-    <string name="addtweet_button_title">Tweet</string>
+    <!--other-->
+    <string name="title_activity_add_new">New tweet</string>
+    <string name="notificaton_channel_description">Sialia applicaton channel</string>
+    <string name="title_activity_settings">Settings</string>
 
     <item name="visible" type="id" />
     <item name="masked" type="id" />
-    <string name="title_activity_add_new">New tweet</string>
-    <string name="title_activity_tweet_detail">Tweet Detail Activity</string>
-    <string name="logout_title">Log out</string>
-    <string name="title_activity_notification">NotificationActivity</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

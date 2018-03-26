@@ -1,5 +1,6 @@
-package com.slgunz.root.sialia.data.source.remote;
+package com.slgunz.root.sialia.di;
 
+import com.slgunz.root.sialia.data.source.remote.TwitterService;
 import com.slgunz.root.sialia.data.source.remote.oauth.OAuthDataSource;
 import com.slgunz.root.sialia.data.source.remote.oauth.TwitterOAuthDataSourceImpl;
 

@@ -1,4 +1,4 @@
-package com.slgunz.root.sialia.data.source.remote;
+package com.slgunz.root.sialia.util.oauth;
 
 import android.net.Uri;
 
@@ -16,14 +16,14 @@ import se.akerfeldt.okhttp.signpost.OkHttpOAuthProvider;
 
 
 @Singleton
-public class AuthorizationRemoteDataSourceImpl implements AuthorizationRemoteDataSource {
+public class AuthorizationHelperImpl implements AuthorizationHelper {
     @Inject
     OkHttpOAuthProvider mOkHttpOAuthProvider;
     @Inject
     OkHttpOAuthConsumer mOkHttpOAuthConsumer;
 
     @Inject
-    AuthorizationRemoteDataSourceImpl() {
+    AuthorizationHelperImpl() {
     }
 
     public Single<String> retrieveRequestToken(final String callbackUrl) {
