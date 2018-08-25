@@ -9,11 +9,11 @@ import javax.inject.Singleton;
 
 public class PreferenceHelper {
 
-    private static final String OAUTH_USER_KEY = "oauthUserKey";
-    private static final String OAUTH_USER_SECRET = "oauthUserSecret";
+    private static final String OAUTH_USER_KEY = "oauth_user_key";
+    private static final String OAUTH_USER_SECRET = "oauth_user_secret";
 
-    private static final String ALARM_STATUS_KEY = "alarmStatusKey";
-    private static final String KEY_LAST_TWEET_ID = "lastTweetId";
+    private static final String ALARM_STATUS_KEY = "alarm_status_key";
+    private static final String KEY_LAST_TWEET_ID = "key_last_tweet_id";
 
     public static void setOAuthUserKey(Context context, String userKey) {
         PreferenceManager.getDefaultSharedPreferences(context)

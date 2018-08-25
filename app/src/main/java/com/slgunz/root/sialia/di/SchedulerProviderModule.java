@@ -1,5 +1,8 @@
-package com.slgunz.root.sialia.util.schedulers;
+package com.slgunz.root.sialia.di;
 
+
+import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
+import com.slgunz.root.sialia.util.schedulers.SchedulerProvider;
 
 import javax.inject.Singleton;
 
@@ -8,7 +11,7 @@ import dagger.Module;
 
 @Module
 public abstract class SchedulerProviderModule {
-    @Singleton
+
     @Binds
     abstract BaseSchedulerProvider provideScheduler(SchedulerProvider schedulerProvider);
 }

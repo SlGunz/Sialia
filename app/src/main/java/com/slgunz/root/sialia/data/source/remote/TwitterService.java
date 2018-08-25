@@ -1,7 +1,5 @@
 package com.slgunz.root.sialia.data.source.remote;
 
-import android.util.Log;
-
 import com.slgunz.root.sialia.data.model.Banners;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
@@ -11,7 +9,6 @@ import java.util.List;
 import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -52,9 +49,9 @@ public interface TwitterService {
     Call<String> settings();
 
     /**
-     * @param status the text of the status update.
-     * @param id (in_reply_to_status_id) id of tweet to reply, status = "@username"
-     * @param media_ids a comma-delimited list of media_ids to associate with Tweet.
+     * @param status    is the text of the status update.
+     * @param id        (in_reply_to_status_id) is an id of tweet to reply, status = "@username"
+     * @param media_ids is a comma-delimited list of media_ids to associate with Tweet.
      */
     @FormUrlEncoded
     @POST("1.1/statuses/update.json")
@@ -65,17 +62,19 @@ public interface TwitterService {
     @FormUrlEncoded
     @POST("1.1/favorites/create.json")
     Single<Tweet> postFavoriteCreate(@Field("id") Long id);
+
     @FormUrlEncoded
     @POST("1.1/favorites/destroy.json")
     Single<Tweet> postFavoriteDestroy(@Field("id") Long id);
 
     @POST("1.1/statuses/retweet/{id}.json")
     Single<Tweet> postStatusRetweet(@Path("id") Long id);
+
     @POST("1.1/statuses/unretweet/{id}.json")
     Single<Tweet> postStatusUnretweet(@Path("id") Long id);
 
     /**
-     * @param media - the raw binary file content being uploaded.
+     * @param media is the raw binary file content being uploaded.
      */
     @Multipart
     @POST("1.1/media/upload.json")

@@ -3,11 +3,11 @@ package com.slgunz.root.sialia.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.data.model.Tweet;
-import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.di.scopes.ActivityScoped;
+import com.slgunz.root.sialia.ui.base.BaseContract;
 import com.slgunz.root.sialia.ui.base.BaseFragment;
 import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
 
@@ -18,33 +18,30 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 @ActivityScoped
 public class LoginPresenter implements LoginContract.Presenter {
 
     @NonNull
-    private ApplicationDataManager mAppDataManager;
+    private ApplicationDataManager mDataManager;
     @NonNull
     private LoginContract.View mLoginView;
     @NonNull
     private BaseSchedulerProvider mScheduler;
 
-    private CompositeDisposable mDisposables = new CompositeDisposable();
+    private CompositeDisposable mDisposables;
 
     @Inject
-    public LoginPresenter(@NonNull ApplicationDataManager sialiaDataManager,
-                          @NonNull LoginActivity loginActivity,
-                          @NonNull BaseSchedulerProvider schedulerProvider) {
-        mAppDataManager = checkNotNull(sialiaDataManager, "Login Application DataManager cannot be null");
-        mLoginView = checkNotNull(loginActivity, "Login Fragment cannot be null");
-        mScheduler = checkNotNull(schedulerProvider, "Login SchedulerProvider cannot be null");
+    public LoginPresenter(@NonNull ApplicationDataManager dataManager,
+                          @NonNull BaseSchedulerProvider scheduler) {
+        mDataManager = dataManager;
+        mScheduler = scheduler;
+        mDisposables = new CompositeDisposable();
     }
 
     @Override
-    public void openAuthenticatePage(String callback_url) {
-        mLoginView.setWaitingIndicator(true);
-        Disposable disposable = mAppDataManager.openAuthenticatePage(callback_url)
+    public void openAuthenticatePage(String callbackUrl) {
+        mLoginView.enableProgressBar(true);
+        Disposable disposable = mDataManager.openAuthenticatePage(callbackUrl)
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
@@ -53,7 +50,10 @@ public class LoginPresenter implements LoginContract.Presenter {
                             mLoginView.openBrowser(s);
                         },
                         // onError
-                        this::showErrorMessage
+                        throwable -> {
+                            showErrorMessage(throwable);
+                            mLoginView.enableProgressBar(false);
+                        }
                 );
         mDisposables.add(disposable);
     }
@@ -63,21 +63,21 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void obtainVerifier(String callback_url, Context context, Intent verifier) {
-        mLoginView.setWaitingIndicator(false);
+    public void obtainVerifier(String callbackUrl, Context context, Intent verifier) {
+        mLoginView.enableProgressBar(false);
 
-        if (mAppDataManager.isNotCorrectVerifier(callback_url, verifier)) {
+        if (mDataManager.isNotCorrectVerifier(callbackUrl, verifier)) {
             showErrorMessage(new InvalidParameterException("returned verifier isn't correct"));
             return;
         }
 
-        Disposable disposable = mAppDataManager.retrieveAccessToken(verifier)
+        Disposable disposable = mDataManager.retrieveAccessToken(verifier)
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
                         // onComplete
                         () -> {
-                            mAppDataManager.saveReceivedOAuthData(context);
+                            mDataManager.saveReceivedOAuthData(context);
                             verifyAccountCredentials();
                         },
                         // onError
@@ -92,13 +92,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         mLoginView.enableLoginButton(false);
 
-        Disposable disposable = mAppDataManager.verifyCredentials()
+        Disposable disposable = mDataManager.verifyCredentials()
                 .observeOn(mScheduler.ui())
                 .subscribeOn(mScheduler.io())
                 .subscribe(
                         // onSuccess
                         user -> {
-                            mAppDataManager.setAccountProfile(user);
+                            mDataManager.setAccountProfile(user);
                             mLoginView.enableLoginButton(true);
                             mLoginView.openHomeScreen();
                         },
@@ -113,17 +113,17 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void setTokenAndSecret(Context context) {
-        mAppDataManager.setTokenAndSecret(context);
+        mDataManager.setTokenAndSecret(context);
     }
 
     @Override
     public boolean hasSavedOAuthData(Context context) {
-        return mAppDataManager.hasTokenAndSecret(context);
+        return mDataManager.hasTokenAndSecret(context);
     }
 
     @Override
-    public void subscribe(BaseFragment view) {
-
+    public void subscribe(LoginContract.View view) {
+        mLoginView = view;
     }
 
     @Override
@@ -131,13 +131,4 @@ public class LoginPresenter implements LoginContract.Presenter {
         mDisposables.dispose();
     }
 
-    @Override
-    public void selectItem(Tweet tweet) {
-
-    }
-
-    @Override
-    public Tweet currentItem() {
-        return null;
-    }
 }

@@ -25,7 +25,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Response;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 
 @Singleton
@@ -43,8 +42,8 @@ public class ApplicationDataManager {
     @Inject
     ApplicationDataManager(AuthorizationHelper authorizationHelper,
                            TwitterService twitterService) {
-        mAuthorizationHelper = checkNotNull(authorizationHelper);
-        mTwitterService = checkNotNull(twitterService);
+        mAuthorizationHelper = authorizationHelper;
+        mTwitterService = twitterService;
     }
 
     public Single<User> verifyCredentials() {
@@ -77,8 +76,8 @@ public class ApplicationDataManager {
      * @param context
      */
     public void setTokenAndSecret(Context context) {
-        String token = checkNotNull(PreferenceHelper.getOAuthUserKey(context));
-        String tokenSecret = checkNotNull(PreferenceHelper.getOAuthUserSecret(context));
+        String token = PreferenceHelper.getOAuthUserKey(context);
+        String tokenSecret = PreferenceHelper.getOAuthUserSecret(context);
 
         mAuthorizationHelper.setTokenAndSecret(token, tokenSecret);
     }
@@ -117,8 +116,8 @@ public class ApplicationDataManager {
 
     /**
      * @param maxId is a value with an ID greater than (that is, more recent than) the specified ID.
-     *                  There are limits to the number of Tweets which can be accessed through the API.
-     *                  If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available.
+     *              There are limits to the number of Tweets which can be accessed through the API.
+     *              If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available.
      */
     public Single<List<Tweet>> loadRecentHomeTimelineTweets(Long maxId) {
         return loadHomeTimelineTweets(TWEET_COUNT, maxId + 1, null);
@@ -133,9 +132,10 @@ public class ApplicationDataManager {
 
     /**
      * tweet and retweet messages
-     * @param message - message or @username (when retweet)
+     *
+     * @param message   - message or @username (when retweet)
      * @param retweetId
-     * @param mediaIds - media_id (use uploadImage() to attach picture)
+     * @param mediaIds  - media_id (use uploadImage() to attach picture)
      * @return
      */
     public Single<Tweet> sendTweet(String message, Long retweetId, String mediaIds) {
@@ -196,7 +196,7 @@ public class ApplicationDataManager {
     }
 
     public Single<Tweet> setRetweeted(boolean isRetweeted, Long tweetId) {
-        if(isRetweeted){
+        if (isRetweeted) {
             return mTwitterService.postStatusRetweet(tweetId);
         }
         return mTwitterService.postStatusUnretweet(tweetId);

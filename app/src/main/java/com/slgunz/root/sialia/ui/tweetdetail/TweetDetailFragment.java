@@ -3,7 +3,6 @@ package com.slgunz.root.sialia.ui.tweetdetail;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,7 +31,7 @@ public class TweetDetailFragment extends BaseFragment implements TweetDetailCont
 
     TweetAdapter mTweetAdapter;
 
-    ImageView mBannerImageView;
+    ImageView mBannerImage;
 
     RecyclerView mRecyclerView;
 
@@ -62,7 +61,7 @@ public class TweetDetailFragment extends BaseFragment implements TweetDetailCont
         mRecyclerView.setAdapter(mTweetAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mBannerImageView = getActivity().findViewById(R.id.toolbar_background);
+        mBannerImage = getActivity().findViewById(R.id.toolbar_background);
 
         return root;
     }
@@ -83,7 +82,7 @@ public class TweetDetailFragment extends BaseFragment implements TweetDetailCont
     public void setTweetOwnerBanner(String url) {
         GlideApp.with(getActivity())
                 .load(url)
-                .into(mBannerImageView);
+                .into(mBannerImage);
     }
 
     @Override

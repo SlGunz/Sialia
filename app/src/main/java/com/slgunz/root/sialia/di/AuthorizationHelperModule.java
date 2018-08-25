@@ -1,4 +1,4 @@
-package com.slgunz.root.sialia.util.oauth;
+package com.slgunz.root.sialia.di;
 
 import com.slgunz.root.sialia.util.oauth.AuthorizationHelper;
 import com.slgunz.root.sialia.util.oauth.AuthorizationHelperImpl;
@@ -12,7 +12,6 @@ import dagger.Module;
 @Module
 public abstract class AuthorizationHelperModule {
 
-    @Singleton
     @Binds
     abstract AuthorizationHelper provideAuthorizationRemoteDataSource(AuthorizationHelperImpl dataSource);
 }

@@ -1,29 +1,34 @@
 package com.slgunz.root.sialia;
 
+import android.app.Activity;
+import android.app.Application;
 import android.os.Build;
 
 import com.slgunz.root.sialia.data.service.PollService;
-import com.slgunz.root.sialia.di.AppComponent;
+import com.slgunz.root.sialia.di.AndroidComponent;
 import com.slgunz.root.sialia.di.DaggerAppComponent;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DaggerApplication;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 
-public class SialiaApplication extends DaggerApplication {
+public class SialiaApplication extends Application {
+
+    @Inject
+    Map<Class<? extends Activity>, AndroidComponent.Builder<? extends Activity>> injectedComponents;
 
     @Override
-    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
-        AppComponent appComponent = DaggerAppComponent
-                .builder()
-                .application(this)
-                .build();
-        appComponent.inject(this);
+    public void onCreate() {
+        super.onCreate();
+        DaggerAppComponent.create().inject(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PollService.createNotificationChannel(getApplicationContext());
         }
+    }
 
-        return appComponent;
+    public AndroidComponent.Builder<? extends Activity> componentBuilder(Class<? extends Activity> aClass) {
+        return injectedComponents.get(aClass);
     }
 }

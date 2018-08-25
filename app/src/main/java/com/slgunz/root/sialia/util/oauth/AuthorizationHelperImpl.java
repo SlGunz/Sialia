@@ -14,8 +14,6 @@ import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer;
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthProvider;
 
 
-
-@Singleton
 public class AuthorizationHelperImpl implements AuthorizationHelper {
     @Inject
     OkHttpOAuthProvider mOkHttpOAuthProvider;
@@ -50,12 +48,12 @@ public class AuthorizationHelperImpl implements AuthorizationHelper {
     }
 
     @Override
-    public String getToken(){
+    public String getToken() {
         return mOkHttpOAuthConsumer.getToken();
     }
 
     @Override
-    public String getTokenSecret(){
+    public String getTokenSecret() {
         return mOkHttpOAuthConsumer.getTokenSecret();
     }
 }

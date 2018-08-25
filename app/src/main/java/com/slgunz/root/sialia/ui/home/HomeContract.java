@@ -11,7 +11,7 @@ import java.util.List;
 public interface HomeContract {
 
     interface View {
-        void setWaitingIndicator(boolean isActive);
+        void enableProgressBar(boolean isActive);
 
         void showErrorMessage(Throwable throwable);
 
@@ -19,7 +19,7 @@ public interface HomeContract {
 
         void setAdapterList(List<Tweet> tweets);
 
-        void insertBeforeToAdapterList(List<Tweet> tweets);
+        void insertInAdapterList(List<Tweet> tweets);
 
         void appendToAdapterList(List<Tweet> tweets);
 

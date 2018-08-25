@@ -1,4 +1,4 @@
-package com.slgunz.root.sialia.di;
+package com.slgunz.root.sialia.di.scopes;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

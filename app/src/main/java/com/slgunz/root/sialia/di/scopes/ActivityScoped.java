@@ -1,4 +1,6 @@
-package com.slgunz.root.sialia.di;
+package com.slgunz.root.sialia.di.scopes;
+
+import com.slgunz.root.sialia.di.AppComponent;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

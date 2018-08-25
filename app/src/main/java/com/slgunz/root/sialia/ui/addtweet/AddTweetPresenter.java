@@ -1,6 +1,7 @@
 package com.slgunz.root.sialia.ui.addtweet;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
@@ -10,27 +11,25 @@ import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 
 public class AddTweetPresenter extends BasePresenter implements AddTweetContract.Presenter {
 
-    private final ApplicationDataManager mAppDataManager;
+    private final ApplicationDataManager mDataManager;
 
     private final BaseSchedulerProvider mScheduler;
     @Nullable
     private AddTweetContract.View mView;
 
     @Inject
-    AddTweetPresenter(@NonNull ApplicationDataManager applicationDataManager,
-                      @NonNull BaseSchedulerProvider schedulerProvider) {
-        super(applicationDataManager, schedulerProvider);
-        mAppDataManager = applicationDataManager;
-        mScheduler = schedulerProvider;
+    AddTweetPresenter(@NonNull ApplicationDataManager dataManager,
+                      @NonNull BaseSchedulerProvider scheduler) {
+        super(dataManager, scheduler);
+        mDataManager = dataManager;
+        mScheduler = scheduler;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class AddTweetPresenter extends BasePresenter implements AddTweetContract
         if (mView != null) {
             mView.enableSendTweetButton(false);
         }
-        Disposable disposable = mAppDataManager.sendTweet(message, retweetId, mediaIds)
+        Disposable disposable = mDataManager.sendTweet(message, retweetId, mediaIds)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
                 .subscribe(
@@ -70,7 +69,7 @@ public class AddTweetPresenter extends BasePresenter implements AddTweetContract
         if (mView != null) {
             mView.enableSendTweetButton(false);
         }
-        Disposable disposable = mAppDataManager.uploadImage(file, name)
+        Disposable disposable = mDataManager.uploadImage(file, name)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
                 .subscribe(

@@ -1,7 +1,6 @@
 package com.slgunz.root.sialia.ui.base;
 
 
-import android.content.Context;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
@@ -27,7 +26,7 @@ public class BasePresenter implements BaseContract.Presenter {
         mDisposables = new CompositeDisposable();
     }
 
-    protected void addDisposable(Disposable disposable){
+    protected void addDisposable(Disposable disposable) {
         mDisposables.add(disposable);
     }
 
@@ -44,12 +43,12 @@ public class BasePresenter implements BaseContract.Presenter {
     }
 
     @Override
-    public void selectItem(Tweet tweet){
+    public void selectItem(Tweet tweet) {
         mDataManager.setSelectedItem(tweet);
     }
 
     @Override
-    public Tweet currentItem(){
+    public Tweet currentItem() {
         return mDataManager.getSelectedItem();
     }
 

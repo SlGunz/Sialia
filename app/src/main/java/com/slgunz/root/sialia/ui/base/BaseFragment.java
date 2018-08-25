@@ -10,6 +10,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,7 @@ import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.User;
 import com.slgunz.root.sialia.data.service.PollService;
 
-import dagger.android.support.DaggerFragment;
-
-public abstract class BaseFragment extends DaggerFragment {
+public abstract class BaseFragment extends Fragment {
 
     private static final String TAG = "BaseFragment";
 
@@ -58,7 +57,7 @@ public abstract class BaseFragment extends DaggerFragment {
         tweet.setRetweeted(isRetweeted);
     }
 
-    protected void selectItem(Tweet tweet){
+    protected void selectItem(Tweet tweet) {
         getPresenter().selectItem(tweet);
     }
 
@@ -132,12 +131,8 @@ public abstract class BaseFragment extends DaggerFragment {
         accountName.setText(user.getName());
         accountScreenName.setText(user.getScreenName());
 
-        statTweets.setText(toString(user.getStatusesCount()));
-        statFollowing.setText(toString(user.getFriendsCount()));
-        statFollower.setText(toString(user.getFollowersCount()));
-    }
-
-    private String toString(Integer integer){
-        return Integer.toString(integer);
+        statTweets.setText(String.valueOf(user.getStatusesCount()));
+        statFollowing.setText(String.valueOf(user.getFriendsCount()));
+        statFollower.setText(String.valueOf(user.getFollowersCount()));
     }
 }

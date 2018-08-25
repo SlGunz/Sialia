@@ -1,15 +1,15 @@
 package com.slgunz.root.sialia.ui.tweetdetail;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.collect.Iterables;
 import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.subtype.Media;
+import com.slgunz.root.sialia.di.ActivityInjector;
 import com.slgunz.root.sialia.ui.common.GlideApp;
 import com.slgunz.root.sialia.util.ActivityUtils;
 
@@ -18,15 +18,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.Lazy;
-import dagger.android.support.DaggerAppCompatActivity;
 
-public class TweetDetailActivity extends DaggerAppCompatActivity {
+public class TweetDetailActivity extends AppCompatActivity {
 
     @Inject
     Lazy<TweetDetailFragment> mDetailFragmentProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityInjector.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tweetdetail_act);
 
@@ -65,16 +65,6 @@ public class TweetDetailActivity extends DaggerAppCompatActivity {
         TextView message = findViewById(R.id.tweet_message_text_view);
         message.setText(tweet.getText());
 
-//        ImageView tweetMedia = findViewById(R.id.media_image_view);
-//        if (getMediaUrl(tweet) == null) {
-//            tweetMedia.setVisibility(View.GONE);
-//        } else {
-//            GlideApp.with(this)
-//                    .load(getMediaUrl(tweet))
-//                    .into(tweetMedia);
-//            tweetMedia.setVisibility(View.VISIBLE);
-//        }
-
         TextView reply = findViewById(R.id.tweets_counter);
         reply.setText(toString(tweet.getReplyCount()));
         TextView retweets = findViewById(R.id.following_counter);
@@ -86,13 +76,13 @@ public class TweetDetailActivity extends DaggerAppCompatActivity {
     private String getMediaUrl(Tweet tweet) {
         List<Media> mediaList = tweet.getEntities().getMedia();
         if (mediaList != null) {
-            Media media = Iterables.getFirst((mediaList), null);
+            Media media = mediaList.get(0);
             return media == null ? null : media.getMediaUrl();
         }
         return null;
     }
 
-    private String toString(Integer integer){
-      return Integer.toString(integer);
+    private String toString(Integer integer) {
+        return Integer.toString(integer);
     }
 }

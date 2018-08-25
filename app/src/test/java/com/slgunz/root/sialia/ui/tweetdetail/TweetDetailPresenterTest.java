@@ -16,6 +16,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -25,7 +26,7 @@ public class TweetDetailPresenterTest {
 
     TweetDetailPresenter presenter;
     @Mock
-    TweetDetailContract.View view;
+    TweetDetailFragment view;
     @Mock
     ApplicationDataManager appManager;
     @Mock
@@ -34,12 +35,15 @@ public class TweetDetailPresenterTest {
     Banner banner;
 
     List<Tweet> tweets;
+    @Mock
+    Tweet tweet;
 
     @Before
     public void initialization() {
         MockitoAnnotations.initMocks(this);
         presenter = new TweetDetailPresenter(appManager, new TestSchedulerProvider());
-        tweets = Arrays.asList(new Tweet());
+        tweet = new Tweet();
+        tweets = Arrays.asList(tweet);
     }
 
     @Test
@@ -47,12 +51,13 @@ public class TweetDetailPresenterTest {
         when(appManager.loadUserProfileBanner(anyLong())).thenReturn(Single.just(banners));
         when(appManager.loadRetweetedTweets(anyLong())).thenReturn(Single.just(tweets));
         when(banners.getMobile()).thenReturn(banner);
-        when(banner.getUrl()).thenReturn(anyString());
+        when(banner.getUrl()).thenReturn("someUrl");
+        when(presenter.currentItem()).thenReturn(tweet);
         presenter.setView(view);
 
         presenter.subscribe(view);
         verify(appManager).loadUserProfileBanner(anyLong());
-        verify(view).setTweetOwnerBanner(anyString());
+        verify(view).setTweetOwnerBanner("someUrl");
         verify(appManager).loadRetweetedTweets(anyLong());
         verify(view).setAdapterList(tweets);
     }

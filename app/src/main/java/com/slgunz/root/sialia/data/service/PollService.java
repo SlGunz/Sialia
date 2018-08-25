@@ -2,6 +2,7 @@ package com.slgunz.root.sialia.data.service;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,13 +26,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import dagger.android.DaggerIntentService;
-
 /**
  * An implementation of service for checking new tweets
  */
 
-public class PollService extends DaggerIntentService {
+public class PollService extends IntentService {
     private static final String TAG = "PollService";
 
     private static final long TIME_INTERVAL = 1000 * 60;    // one minute
@@ -94,6 +93,11 @@ public class PollService extends DaggerIntentService {
         Intent intent = PollService.newIntent(context);
         PendingIntent pIntent = PendingIntent.getService(context, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+
+        if(alarmManager == null){
+            Log.d(TAG, "Alarm Manager is null");
+            return;
+        }
 
         if (isOn) {
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,

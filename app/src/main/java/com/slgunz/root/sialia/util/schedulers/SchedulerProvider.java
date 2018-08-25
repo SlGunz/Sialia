@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
+import dagger.Reusable;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+@Reusable
 public class SchedulerProvider implements BaseSchedulerProvider {
 
     @Inject

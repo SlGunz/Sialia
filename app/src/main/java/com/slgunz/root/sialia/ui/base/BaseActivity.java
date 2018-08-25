@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -15,9 +16,8 @@ import com.slgunz.root.sialia.ui.login.LoginActivity;
 import com.slgunz.root.sialia.ui.notification.NotificationActivity;
 import com.slgunz.root.sialia.ui.settings.SettingsActivity;
 
-import dagger.android.support.DaggerAppCompatActivity;
 
-public abstract class BaseActivity extends DaggerAppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract DrawerLayout getDrawerLayout();
 
@@ -61,7 +61,6 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
                                 break;
                         }
                     }
-                    // Close the navigation drawer when an item is selected.
                     menuItem.setChecked(true);
                     getDrawerLayout().closeDrawers();
                     return true;
@@ -73,7 +72,6 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Open the navigation drawer when the home icon is selected from the toolbar.
                 getDrawerLayout().openDrawer(GravityCompat.START);
                 return true;
         }

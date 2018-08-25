@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
 import com.slgunz.root.sialia.R;
+import com.slgunz.root.sialia.di.ActivityInjector;
 import com.slgunz.root.sialia.ui.base.BaseActivity;
 import com.slgunz.root.sialia.util.ActivityUtils;
 
@@ -24,6 +25,7 @@ public class NotificationActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityInjector.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notification_act);
 

@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.slgunz.root.sialia.ui.base.BaseContract;
+import com.slgunz.root.sialia.ui.base.BaseFragment;
 
 
 public interface LoginContract {
     interface View {
 
-        void setWaitingIndicator(boolean active);
+        void enableProgressBar(boolean active);
 
         void openHomeScreen();
 
@@ -20,16 +21,20 @@ public interface LoginContract {
         void showErrorMessage(Throwable error);
     }
 
-    interface Presenter extends BaseContract.Presenter {
+    interface Presenter  {
 
-        void openAuthenticatePage(String callback_url);
+        void openAuthenticatePage(String callbackUrl);
 
-        void obtainVerifier(String callback_url, Context context, Intent verifier);
+        void obtainVerifier(String callbackUrl, Context context, Intent verifier);
 
         void verifyAccountCredentials();
 
         void setTokenAndSecret(Context context);
 
         boolean hasSavedOAuthData(Context context);
+
+        void subscribe(View view);
+
+        void unsubscribe();
     }
 }

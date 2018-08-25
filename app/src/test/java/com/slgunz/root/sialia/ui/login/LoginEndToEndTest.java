@@ -52,7 +52,7 @@ public class LoginEndToEndTest {
 
         // User click "sign in with twitter" button
         presenter.openAuthenticatePage(CALLBACK_URL);
-        verify(mView).setWaitingIndicator(true);
+        verify(mView).enableProgressBar(true);
         // data manager generates query to twitter service
         verify(appManager).openAuthenticatePage(CALLBACK_URL);
         // application launches a browser for request a permission
@@ -60,7 +60,7 @@ public class LoginEndToEndTest {
 
         // Obtain result from "onNewIntent" event for retrieving "access token"
         presenter.obtainVerifier(CALLBACK_URL, mContext, intent);
-        verify(mView).setWaitingIndicator(false);
+        verify(mView).enableProgressBar(false);
         // sends a query for getting an access token
         verify(appManager).retrieveAccessToken(intent);
         //getting and saving data

@@ -33,8 +33,6 @@ public class NotificationFragment extends BaseFragment implements NotificationCo
     public NotificationFragment() {
     }
 
-    ;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

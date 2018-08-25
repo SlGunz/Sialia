@@ -1,7 +1,5 @@
 package com.slgunz.root.sialia.ui.home;
 
-import android.graphics.drawable.Drawable;
-
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.ui.TestSchedulerProvider;
@@ -18,7 +16,6 @@ import java.util.List;
 import io.reactivex.Single;
 
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,14 +26,10 @@ public class HomeEndToEndTest {
     private ApplicationDataManager appManager;
 
     private HomePresenter presenter;
-
     @Mock
-    private HomeContract.View mView;
+    private HomeFragment mView;
 
-    @Mock
-    private Drawable drawable;
-
-    List<Tweet> mTweets;
+    private List<Tweet> mTweets;
 
     @Before
     public void initialization() {
@@ -55,10 +48,10 @@ public class HomeEndToEndTest {
         verify(appManager).loadHomeTimeLineTweets();
         // load tweets from service
         verify(appManager).loadHomeTimeLineTweets();
-        verify(mView).setWaitingIndicator(true);
+        verify(mView).enableProgressBar(true);
         // load tweets to RecyclerView
         verify(mView).setAdapterList(mTweets);
-        verify(mView).setWaitingIndicator(false);
+        verify(mView).enableProgressBar(false);
     }
 
     @Test
@@ -70,7 +63,7 @@ public class HomeEndToEndTest {
         // send request to server
         verify(appManager).loadHomeTimeLineTweets();
         // send received data to RecyclerView Adapter
-        verify(mView).insertBeforeToAdapterList(mTweets);
+        verify(mView).insertInAdapterList(mTweets);
     }
 
     @Test

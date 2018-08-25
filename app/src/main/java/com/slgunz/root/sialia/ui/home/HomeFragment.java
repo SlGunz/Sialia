@@ -22,7 +22,7 @@ import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirec
 import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.service.PollService;
-import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.di.scopes.ActivityScoped;
 import com.slgunz.root.sialia.ui.addtweet.AddTweetActivity;
 import com.slgunz.root.sialia.ui.base.BaseFragment;
 import com.slgunz.root.sialia.ui.base.BasePresenter;
@@ -44,15 +44,15 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
     @Inject
     HomeContract.Presenter mPresenter;
 
-    private boolean mCantRequestNewTweets = true;
+    private boolean mCanSwipe;
 
-    private boolean mIsServiceOn;
+    private boolean mIsServiceEnabled;
 
     private TweetAdapter mTweetAdapter;
     // third-party widget
     private ScrollChildSwipyRefreshLayout mSwipyRefreshLayout;
 
-    private RecyclerView mHomeRecyclerView;
+    private RecyclerView mRecyclerView;
 
     private ProgressBar mProgressBar;
 
@@ -86,7 +86,7 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
         setSwipeRefreshLayoutContent(root);
         setFabContent();
 
-        mIsServiceOn = PollService.isAlarmOn(getActivity());
+        mIsServiceEnabled = PollService.isAlarmOn(getActivity());
 
         return root;
     }
@@ -109,7 +109,7 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
         inflater.inflate(R.menu.toolbar_actions, menu);
         MenuItem item = menu.findItem(R.id.service_switcher);
 
-        if (mIsServiceOn) {
+        if (mIsServiceEnabled) {
             item.setTitle(R.string.menu_item_stop);
         } else {
             item.setTitle(R.string.menu_item_start);
@@ -120,8 +120,8 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.service_switcher:
-                mIsServiceOn = !PollService.isAlarmOn(getActivity());
-                PollService.startServiceAlarm(getActivity(), mIsServiceOn);
+                mIsServiceEnabled = !PollService.isAlarmOn(getActivity());
+                PollService.startServiceAlarm(getActivity(), mIsServiceEnabled);
                 getActivity().invalidateOptionsMenu();
                 break;
         }
@@ -133,7 +133,7 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void setWaitingIndicator(boolean isActive) {
+    public void enableProgressBar(boolean isActive) {
         mProgressBar.setVisibility(isActive ? View.VISIBLE : View.INVISIBLE);
     }
 
@@ -150,21 +150,21 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
     @Override
     public void setAdapterList(List<Tweet> tweets) {
         mTweetAdapter.replaceData(tweets);
-        mCantRequestNewTweets = false;
+        mCanSwipe = true;
     }
 
     @Override
-    public void insertBeforeToAdapterList(List<Tweet> tweets) {
+    public void insertInAdapterList(List<Tweet> tweets) {
         mTweetAdapter.replaceData(tweets);
         mSwipyRefreshLayout.setRefreshing(false);
-        mCantRequestNewTweets = false;
+        mCanSwipe = true;
     }
 
     @Override
     public void appendToAdapterList(List<Tweet> tweets) {
         mTweetAdapter.appendData(tweets);
         mSwipyRefreshLayout.setRefreshing(false);
-        mCantRequestNewTweets = false;
+        mCanSwipe = true;
         mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.TOP);
     }
 
@@ -204,9 +204,9 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
                 this::openAddTweetScreen
         );
 
-        mHomeRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
+        mRecyclerView = root.findViewById(R.id.home_timeline_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        mHomeRecyclerView.setAdapter(mTweetAdapter);
+        mRecyclerView.setAdapter(mTweetAdapter);
         // set custom ScrollListener for loading previous tweets
         EndlessRecyclerViewScrollListener listener =
                 new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -215,14 +215,14 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
                         mSwipyRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
                     }
                 };
-        mHomeRecyclerView.addOnScrollListener(listener);
-        mHomeRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.addOnScrollListener(listener);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         // item divider decoration
         DividerItemDecoration itemDecoration = new DividerItemDecoration(
-                mHomeRecyclerView.getContext(),
+                mRecyclerView.getContext(),
                 linearLayoutManager.getOrientation());
-        mHomeRecyclerView.addItemDecoration(itemDecoration);
+        mRecyclerView.addItemDecoration(itemDecoration);
     }
 
     private void setSwipeRefreshLayoutContent(View root) {
@@ -233,22 +233,22 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
         );
-        mSwipyRefreshLayout.setScrollUpChild(mHomeRecyclerView);
+        mSwipyRefreshLayout.setScrollUpChild(mRecyclerView);
 
         mSwipyRefreshLayout.setOnRefreshListener(
                 direction -> {
-                    if (mCantRequestNewTweets) {
+                    if (!mCanSwipe) {
                         return;
                     }
                     // set an action for swipe up
                     if (direction == SwipyRefreshLayoutDirection.TOP) {
                         mPresenter.loadRecentTweets(mTweetAdapter.getMaxId());
-                        mCantRequestNewTweets = true;
+                        mCanSwipe = false;
                     }
                     // for swipe down
                     if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
                         mPresenter.loadPreviousTweets(mTweetAdapter.getMinId());
-                        mCantRequestNewTweets = true;
+                        mCanSwipe = false;
                     }
                 }
         );

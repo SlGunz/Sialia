@@ -5,24 +5,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.slgunz.root.sialia.R;
+import com.slgunz.root.sialia.di.ActivityInjector;
 import com.slgunz.root.sialia.ui.home.HomeActivity;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerAppCompatActivity;
-
-public class LoginActivity extends DaggerAppCompatActivity implements LoginContract.View {
+public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
     final public static String CALLBACK_URL = "sialia-twitter-client://sialiatwitterclient";
-
     @Inject
     LoginContract.Presenter mPresenter;
-
     // uses for snackbar
     CoordinatorLayout mCoordinatorLayout;
 
@@ -32,6 +31,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements LoginContr
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityInjector.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_act);
 
@@ -44,6 +44,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements LoginContr
 
         mProgressBar = findViewById(R.id.login_progress_bar);
 
+        mPresenter.subscribe(this);
         if (mPresenter.hasSavedOAuthData(LoginActivity.this)) {
             mPresenter.setTokenAndSecret(this);
             mPresenter.verifyAccountCredentials();
@@ -63,7 +64,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements LoginContr
     }
 
     @Override
-    public void setWaitingIndicator(boolean active) {
+    public void enableProgressBar(boolean active) {
         mProgressBar.setVisibility(active ? View.VISIBLE : View.INVISIBLE);
     }
 
@@ -87,6 +88,6 @@ public class LoginActivity extends DaggerAppCompatActivity implements LoginContr
 
     @Override
     public void showErrorMessage(Throwable error) {
-        Snackbar.make(mCoordinatorLayout, error.getMessage(), Snackbar.LENGTH_LONG);
+        Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

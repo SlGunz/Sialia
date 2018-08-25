@@ -3,7 +3,9 @@ package com.slgunz.root.sialia.ui.notifications;
 import com.slgunz.root.sialia.data.ApplicationDataManager;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.ui.TestSchedulerProvider;
+import com.slgunz.root.sialia.ui.base.BaseFragment;
 import com.slgunz.root.sialia.ui.notification.NotificationContract;
+import com.slgunz.root.sialia.ui.notification.NotificationFragment;
 import com.slgunz.root.sialia.ui.notification.NotificationPresenter;
 
 import org.junit.Before;
@@ -25,7 +27,7 @@ public class NotificationPresenterTest {
     NotificationPresenter mPresenter;
 
     @Mock
-    NotificationContract.View mView;
+    NotificationFragment mView;
 
     @Mock
     ApplicationDataManager mDataManager;
@@ -43,7 +45,7 @@ public class NotificationPresenterTest {
     public void whenFragmentOpening_loadingMentionTweetsFromServer() {
         when(mDataManager.loadMentionsTweets()).thenReturn(Single.just(mTweetList));
 
-        mPresenter.subscribe(mView);
+        mPresenter.subscribe( mView);
         verify(mDataManager).loadMentionsTweets();
         verify(mView).replaceData(mTweetList);
     }

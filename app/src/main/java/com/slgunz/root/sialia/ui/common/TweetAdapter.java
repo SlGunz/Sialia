@@ -14,11 +14,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
-import com.google.common.collect.Iterables;
 import com.slgunz.root.sialia.R;
 import com.slgunz.root.sialia.data.model.Tweet;
 import com.slgunz.root.sialia.data.model.subtype.Media;
 import com.slgunz.root.sialia.util.ActivityUtils;
+import com.slgunz.root.sialia.util.Iterators;
 
 import java.util.List;
 
@@ -101,19 +101,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetHolder>
     private String getMediaUrl(Tweet tweet) {
         List<Media> mediaList = tweet.getEntities().getMedia();
         if (mediaList != null) {
-            Media media = Iterables.getFirst((mediaList), null);
+            Media media = Iterators.getFirst((mediaList), null);
             return media == null ? null : media.getMediaUrl();
         }
         return null;
     }
 
     public Long getMaxId() {
-        Tweet tweet = Iterables.getFirst(mTweets, null);
+        Tweet tweet = Iterators.getFirst(mTweets, null);
         return tweet == null ? null : tweet.getId();
     }
 
     public Long getMinId() {
-        Tweet tweet = Iterables.getLast(mTweets, null);
+        Tweet tweet = Iterators.getLast(mTweets, null);
         return tweet == null ? null : tweet.getId();
     }
 

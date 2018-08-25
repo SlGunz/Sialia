@@ -1,6 +1,6 @@
 package com.slgunz.root.sialia.ui.login;
 
-import com.slgunz.root.sialia.di.ActivityScoped;
+import com.slgunz.root.sialia.di.scopes.ActivityScoped;
 
 import dagger.Binds;
 import dagger.Module;

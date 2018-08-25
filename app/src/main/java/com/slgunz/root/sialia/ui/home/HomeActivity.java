@@ -1,28 +1,21 @@
 package com.slgunz.root.sialia.ui.home;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.slgunz.root.sialia.R;
+import com.slgunz.root.sialia.di.ActivityInjector;
 import com.slgunz.root.sialia.ui.base.BaseActivity;
-import com.slgunz.root.sialia.ui.base.BasePresenter;
-import com.slgunz.root.sialia.ui.notification.NotificationActivity;
-import com.slgunz.root.sialia.ui.settings.SettingsActivity;
 import com.slgunz.root.sialia.util.ActivityUtils;
 
 import javax.inject.Inject;
 
 import dagger.Lazy;
-import dagger.android.support.DaggerAppCompatActivity;
 
 public class HomeActivity extends BaseActivity {
 
@@ -33,6 +26,7 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        ActivityInjector.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_act);
 

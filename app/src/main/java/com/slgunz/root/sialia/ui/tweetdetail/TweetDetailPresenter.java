@@ -1,6 +1,7 @@
 package com.slgunz.root.sialia.ui.tweetdetail;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.slgunz.root.sialia.data.ApplicationDataManager;
@@ -9,29 +10,28 @@ import com.slgunz.root.sialia.ui.base.BaseFragment;
 import com.slgunz.root.sialia.ui.base.BasePresenter;
 import com.slgunz.root.sialia.util.schedulers.BaseSchedulerProvider;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
 
 public class TweetDetailPresenter extends BasePresenter implements TweetDetailContract.Presenter {
 
-    private final ApplicationDataManager mAppDataManager;
+    private final ApplicationDataManager mDataManager;
 
     private final BaseSchedulerProvider mScheduler;
     @Nullable
     private TweetDetailContract.View mView;
 
     @Inject
-    TweetDetailPresenter(@NonNull ApplicationDataManager applicationDataManager,
-                         @NonNull BaseSchedulerProvider schedulerProvider) {
-        super(applicationDataManager, schedulerProvider);
-        mAppDataManager = applicationDataManager;
-        mScheduler = schedulerProvider;
+    TweetDetailPresenter(@NonNull ApplicationDataManager dataManager,
+                         @NonNull BaseSchedulerProvider scheduler) {
+        super(dataManager, scheduler);
+        mDataManager = dataManager;
+        mScheduler = scheduler;
     }
 
     @Override
-    public void subscribe(BaseFragment view) {
+    public void subscribe(@NonNull BaseFragment view) {
         super.subscribe(view);
         mView = (TweetDetailContract.View) view;
         loadRetweetedTweets();
@@ -39,7 +39,7 @@ public class TweetDetailPresenter extends BasePresenter implements TweetDetailCo
 
     private void loadRetweetedTweets() {
         Long tweetId = currentItem().getId();
-        Disposable disposable = mAppDataManager.loadRetweetedTweets(tweetId)
+        Disposable disposable = mDataManager.loadRetweetedTweets(tweetId)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
                 .subscribe(
@@ -58,10 +58,9 @@ public class TweetDetailPresenter extends BasePresenter implements TweetDetailCo
     }
 
 
-    //
     private void receiveUserBanner() {
         Long tweetId = currentItem().getId();
-        Disposable disposable = mAppDataManager.loadUserProfileBanner(tweetId)
+        Disposable disposable = mDataManager.loadUserProfileBanner(tweetId)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
                 .subscribe(
